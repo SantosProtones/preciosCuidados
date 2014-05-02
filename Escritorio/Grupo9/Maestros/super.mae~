@@ -1,0 +1,186 @@
+1;Buenos Aires;Precios Cuidados;N/A;N/A;N/A
+101;Buenos Aires;Aida Supermercados;28939189;DNI;Paraná 734
+102;Buenos Aires;Autoservicio Don Ricardo;26150210;DNI;Montevideo 602
+103;Buenos Aires;Autoservicio Exper;16474338;DNI;Martinez 454
+104;Buenos Aires;Autoservicio Juan Viamo;12829404;DNI;La Pampa 2107
+105;Buenos Aires;Autoservicio Lo de Jose;11031042;DNI;Calle 22 N° 15
+106;Buenos Aires;Autoservicio Los Hermanos;26240875;DNI;Calle 22 N° 11
+107;Buenos Aires;Autoservicio Tauro;8491481;LE;Callao 1007
+108;Buenos Aires;Autoservicio Zelada;24840502;DNI;Cabildo 215
+109;Buenos Aires;Carrefour;30350102311;CUIT;Calle 44 N° 11
+110;Buenos Aires;Carrefour Express;30360216892;CUIT;Av. Santa Marina 6389
+111;Buenos Aires;Changomas;30361800193;CUIT;Av. Sáenz 228
+112;Buenos Aires;Coto;30362447534;CUIT;Av. Sáenz 220
+113;Buenos Aires;Dia;30371703736;CUIT;Av. Rivadavia 1349
+114;Buenos Aires;Disco;30373392717;CUIT;Calle 57 N° 10
+115;Buenos Aires;Josimar;33421974421;CUIT;Avenida Boyaca No. 74-39
+116;Buenos Aires;La Anonima;33445164035;CUIT;Callao 1029
+117;Buenos Aires;La Banderita;33454748076;CUIT;Goycoechea 40
+118;Buenos Aires;Mercadito Vane;33456666367;CUIT;La Pampa 2106
+119;Buenos Aires;Planeta;33456692218;CUIT;Triunvirato 68
+120;Buenos Aires;Supermercado Anamar;33463033738;CUIT;Sarmiento 1913
+121;Buenos Aires;Supermercado Brian;33464053839;CUIT;Calle 22 N° 12
+122;Buenos Aires;Supermercado Cayetano;33464526610;CUIT;Avda 1 De Mayo No 64 A-59 Sur
+123;Buenos Aires;Supermercado Deko;33469137761;CUIT;La Pampa 2105
+124;Buenos Aires;Supermercado Diego;33469492694;CUIT;Calle 100 No 41-97
+125;Buenos Aires;Supermercado el Arco;33469537735;CUIT;Colombres 160
+126;Buenos Aires;Supermercado el Mago;33471324298;CUIT;Cerviño 376
+127;Buenos Aires;Supermercado Girasoles;33473797509;CUIT;Esteban Adrogué 1051
+128;Buenos Aires;Supermercado La Emilia;33474074010;CUIT;Cordoba 23
+129;Buenos Aires;Supermercado La Negra;8239442;LE;Av. M. De Oca 736
+130;Buenos Aires;Supermercado Marina;30314301;DNI;Av. Sáenz 224
+131;Buenos Aires;Supermercado Uni;23877980;DNI;Av Esperanza No. 74A- 48
+132;Buenos Aires;Toledo;33445164035;CUIT;Av. Rivadavia 12345
+133;Buenos Aires;Vea;33454748076;CUIT;Av. Santa Marina 639
+134;Buenos Aires;Walmart;33456666367;CUIT;Av. Santa Marina 97
+2;Capital y GBA;Precios Cuidados;N/A;N/A;N/A
+201;Capital y GBA;Carrefour;30350102311;CUIT;Avda Suba No 128A-72
+202;Capital y GBA;Carrefour Express;30360216892;CUIT;Av. Caracas No 39-50
+203;Capital y GBA;Changomas;30361800193;CUIT;Tucuman 571
+204;Capital y GBA;Coto;30362447534;CUIT;Victoria 193
+205;Capital y GBA;Coto Minimercado;30364904315;CUIT;Tucuman 603
+206;Capital y GBA;Dia;30371703736;CUIT;Sarmiento 1945
+207;Capital y GBA;Disco;30373392717;CUIT;La Pampa 2108
+208;Capital y GBA;Josimar;33421974421;CUIT;Manzanares 40
+209;Capital y GBA;Jumbo;33433213172;CUIT;Martinez 453
+210;Capital y GBA;Super Cri Cri;33436207873;CUIT;Sarmiento 1913
+211;Capital y GBA;Supermercado El Sirio;33444553234;CUIT;Rosales 161
+212;Capital y GBA;Toledo;33445164035;CUIT;Av. Caracas 51 A 07 Sur
+213;Capital y GBA;Vea;33454748076;CUIT;Boedo 7301
+214;Capital y GBA;Walmart;33456666367;CUIT;Cabildo 1214
+3;Catamarca;Precios Cuidados;N/A;N/A;N/A
+301;Catamarca;Carrefour;30350102311;CUIT;Goycoechea 39
+302;Catamarca;Walmart;33456666367;CUIT;Pedro Graciarena 2754
+4;Chaco;Precios Cuidados;N/A;N/A;N/A
+401;Chaco;Supermercado del Parana;30585693159;CUIT;Goycoechea 41
+402;Chaco;Carrefour;30350102311;CUIT;Jardin Sur 10 # 15-04
+403;Chaco;Walmart;33456666367;CUIT;Cerviño 375
+404;Chaco;Zorzon Supermercados;28324822;DNI;Pedro Graciarena 2397
+405;Chaco;Libertad;33565232401;CUIT;Colombres 569
+5;Chubut;Precios Cuidados;N/A;N/A;N/A
+501;Chubut;Carrefour;30350102311;CUIT;La Pampa 2105
+502;Chubut;La Anonima;33445164035;CUIT;Gdor. Arias 3
+503;Chubut;Walmart;33456666367;CUIT;Membrillar 682
+504;Chubut;Supermercado Todo;30589159820;CUIT;Cordoba 23
+6;Cordoba;Precios Cuidados;N/A;N/A;N/A
+601;Cordoba;Autoservicio Eco;23805112;DNI;Av. Sarmiento 908
+602;Cordoba;Buenos Dias;13980288;DNI;10 De Julio 342
+603;Cordoba;Carrefour;30350102311;CUIT;13 De Julio 342
+604;Cordoba;Carrefour Express;30360216892;CUIT;Calle 57 N° 9
+605;Cordoba;Dia;30371703736;CUIT;Victoria 129
+606;Cordoba;Disco;30373392717;CUIT;Esteban Adrogué 1058
+607;Cordoba;El Solar;27238424;DNI;Av. 25 De Mayo 345
+608;Cordoba;Grupo El Risso;22727340;DNI;Rosales 97
+609;Cordoba;Libertad;33565232401;CUIT;Calle 117 Con 6A
+610;Cordoba;Supermercado el gury;17106908;DNI;Triunvirato 116
+611;Cordoba;Unico;33454766676;CUIT;Calle 22 N° 10
+612;Cordoba;Walmart;33456666367;CUIT;Calle 44 N° 10
+7;Corrientes;Precios Cuidados;N/A;N/A;N/A
+701;Corrientes;Carrefour;30350102311;CUIT;Av. Las Heras 2401
+702;Corrientes;Dia;30371703736;CUIT;Calle 12 N° 1111, E/ 55 Y 56
+703;Corrientes;El Super;5537853;LE;Calle 47 N° 636
+704;Corrientes;La Anonima;33445164035;CUIT;La Pampa 2103
+705;Corrientes;Supermercado Parada Canga;5830114;LE;Esteban Adrogué 1054
+706;Corrientes;Walmart;33456666367;CUIT;Colombres 160
+8;Entre Rios;Precios Cuidados;N/A;N/A;N/A
+801;Entre Rios;Carrefour;30350102311;CUIT;Cabildo 215
+9;Formosa;Precios Cuidados;N/A;N/A;N/A
+901;Formosa;Supermercado del Parana;30585693159;CUIT;Calle 47 N° 9
+902;Formosa;Walmart;33456666367;CUIT;Gdor. Arias 3
+903;Formosa;Carrefour;30350102311;CUIT;Sarmiento 1897
+10;Jujuy;Precios Cuidados;N/A;N/A;N/A
+1001;Jujuy;Carrefour;30350102311;CUIT;Campichuelo 610
+1002;Jujuy;Comodin;30332039350;CUIT;Cordoba 22
+1003;Jujuy;Walmart;33456666367;CUIT;Calle 22 N° 10
+11;La Pampa;Precios Cuidados;N/A;N/A;N/A
+1101;La Pampa;Walmart;33456666367;CUIT;Pedernera Y 82
+1102;La Pampa;Carrefour;30350102311;CUIT;Santa Fe 2239
+1103;La Pampa;La Anonima;33445164035;CUIT;Calle 22 N° 10
+12;La Rioja;Precios Cuidados;N/A;N/A;N/A
+1201;La Rioja;Walmart;33456666367;CUIT;Colombres 2813
+1202;La Rioja;Carrefour;30350102311;CUIT;Campos 3854
+13;Mendoza;Precios Cuidados;N/A;N/A;N/A
+1301;Mendoza;Carrefour;30350102311;CUIT;Martinez 457
+1302;Mendoza;Walmart;33456666367;CUIT;Colombres 165
+1303;Mendoza;Jumbo;33433213172;CUIT;Cordoba 20
+14;Misiones;Precios Cuidados;N/A;N/A;N/A
+1401;Misiones;California;11491125;DNI;Colombres 620
+1402;Misiones;Libertad;33565232401;CUIT;Pedernera Y 66
+1403;Misiones;Supermercado del Parana;30585693159;CUIT;Azuren 223 3Cer Piso
+1404;Misiones;Walmart;33456666367;CUIT;Santa Fe 4483
+15;Neuquen;Precios Cuidados;N/A;N/A;N/A
+1501;Neuquen;Supermercado Todo;30589159820;CUIT;Santa Fe 1882
+1502;Neuquen;Carrefour;30350102311;CUIT;Av. Rivadavia 12345
+1503;Neuquen;La Anonima;33445164035;CUIT;Av. Maipú 283
+1504;Neuquen;Walmart;33456666367;CUIT;Pedro Graciarena 2805
+1505;Neuquen;Supermercado Todo;30589159820;CUIT;Santa Fe 2290
+16;Rio Negro;Precios Cuidados;N/A;N/A;N/A
+1601;Rio Negro;Carrefour;30350102311;CUIT;Av. L.M. Campos 1253
+1602;Rio Negro;La Anonima;33445164035;CUIT;Gdor. Arias 8
+1603;Rio Negro;Walmart;33456666367;CUIT;Martinez 457
+17;Salta;Precios Cuidados;N/A;N/A;N/A
+1701;Salta;Carrefour;30350102311;CUIT;Calle 53 No 21-40
+1702;Salta;Comodin;30332039350;CUIT;Calle 134 No 7B-83 Edi. El Bosque Local 1
+1703;Salta;Dia;30371703736;CUIT;Calle 33 No 13A-08 Teusaquillo
+1704;Salta;Jumbo;33433213172;CUIT;Ruta Panamericana 2650
+1705;Salta;Libertad;33565232401;CUIT;Contibonra. 98 N. 18-19
+1706;Salta;Walmart;33456666367;CUIT;Paraná 766
+18;San Juan;Precios Cuidados;N/A;N/A;N/A
+1801;San Juan;Libertad;33565232401;CUIT;Calle 85 10 -74
+1802;San Juan;Walmart;33456666367;CUIT;Gdor. Arias 3
+19;San Luis;Precios Cuidados;N/A;N/A;N/A
+1901;San Luis;Carrefour;30350102311;CUIT;Callao 1021
+1902;San Luis;Hipermercado Europa;8429992;LC;Uruguay 1163
+1903;San Luis;Super Europa;4495905;LC;Crámer 1710
+1904;San Luis;Walmart;33456666367;CUIT;Calle 37 Sur No 78H-22 Kennedy
+20;Santa Cruz;Precios Cuidados;N/A;N/A;N/A
+2001;Santa Cruz;Carrefour;30350102311;CUIT;Calle 95 No. 14 -44
+2002;Santa Cruz;La Anonima;33445164035;CUIT;Calle 13 No 8A Edificio Del Comercio
+21;Santa Fe;Precios Cuidados;N/A;N/A;N/A
+2101;Santa Fe;Alfa;7650738;LC;Victoria 193
+2102;Santa Fe;Almacenes Rosario;25098046;DNI;Tucuman 603
+2103;Santa Fe;Arco Iris;18811255;DNI;Sarmiento 1945
+2104;Santa Fe;Autococo;23834425;DNI;La Pampa 2108
+2105;Santa Fe;Autoservicio Destefanis;10425139;DNI;Manzanares 40
+2106;Santa Fe;Autoservicio El Once;29867080;DNI;Martinez 453
+2107;Santa Fe;Cadena Dar;23552247;DNI;Sarmiento 1913
+2108;Santa Fe;Carrefour;30350102311;CUIT;Rosales 161
+2109;Santa Fe;Changomas;30361800193;CUIT;Pedernera Y 66
+2110;Santa Fe;Combil;7794158;LC;Boedo 7301
+2111;Santa Fe;Coto;30362447534;CUIT;Cabildo 1214
+2112;Santa Fe;Dia;30371703736;CUIT;Paraná 734
+2113;Santa Fe;Disco;30373392717;CUIT;Montevideo 602
+2114;Santa Fe;Don Amelio;23906298;DNI;Martinez 454
+2115;Santa Fe;Don Juan;26090751;DNI;La Pampa 2107
+2116;Santa Fe;El buen amigo;29348025;DNI;Calle 22 N° 15
+2117;Santa Fe;El delfin;32325987;DNI;Calle 22 N° 11
+2118;Santa Fe;El Solar;27238424;DNI;Callao 1007
+2119;Santa Fe;Genova;30330851788;CUIT;Calle 13 63-30
+2120;Santa Fe;Hipermercado Bordotti;16977261;DNI;Calle 44 N° 11
+2121;Santa Fe;Jumbo;33433213172;CUIT;Av. Santa Marina 6389
+2122;Santa Fe;La Anonima;33445164035;CUIT;Av. Sáenz 228
+2123;Santa Fe;La Reina;27691544;DNI;Av. Sáenz 220
+2124;Santa Fe;Libertad;33565232401;CUIT;Av. Rivadavia 1349
+2125;Santa Fe;Manicord;30378841260;CUIT;Calle 57 N° 10
+2126;Santa Fe;Melo;30381037391;CUIT;Calle 47 N° 9
+2127;Santa Fe;Micropack;30383029862;CUIT;Callao 1029
+2128;Santa Fe;Prove Sur;8309784;LE;Goycoechea 40
+2129;Santa Fe;Provein;10564842;DNI;La Pampa 2106
+2130;Santa Fe;Reina Max;28501297;DNI;Triunvirato 68
+2131;Santa Fe;Rosario Compras;25595148;DNI;Sarmiento 1913
+2132;Santa Fe;Super Avenida;30387374563;CUIT;Calle 22 N° 12
+2133;Santa Fe;Super Dumbo;30394845454;CUIT;Las Flores 103
+2134;Santa Fe;Super Pampa;30396396155;CUIT;Calle 63 No. 10 - 83
+2135;Santa Fe;Supermercado Beltran;30397611738;CUIT;Calle 70 No. 8-27
+2136;Santa Fe;Supermercado La Ola;30400937429;CUIT;Calle 63 No 10-83, Piso 2
+2137;Santa Fe;Supermercado Pingüino;30410922450;CUIT;Bolivia 376
+2138;Santa Fe;Unico;33454766676;CUIT;Esteban Adrogué 1051
+22;Santiago del Estero;Precios Cuidados;N/A;N/A;N/A
+2201;Santiago del Estero;Distribuidora Sur Santiagueña;33620600;DNI;Triunvirato 4
+2202;Santiago del Estero;Libertad;33565232401;CUIT;Paraná 766
+2203;Santiago del Estero;Walmart;33456666367;CUIT;Tucuman 571
+23;Tierra del Fuego;Precios Cuidados;N/A;N/A;N/A
+2301;Tierra del Fuego;La Anonima;33445164035;CUIT;Boedo 7303
+2302;Tierra del Fuego;Carrefour;30350102311;CUIT;Pedernera Y 82
+24;Tucuman;Precios Cuidados;N/A;N/A;N/A
+2401;Tucuman;Carrefour;30350102311;CUIT;Rosales 177

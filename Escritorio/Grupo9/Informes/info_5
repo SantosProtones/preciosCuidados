@@ -1,0 +1,18 @@
+Condiciones de invocacion|Opciones:[w r m u ]|Provincia-Super:[Todos ]|Usuarios:[BetoVelez ]
+
+(*)Precio menor o igual a PC.	(**)Precio mayor al PC.	(***)PC no encontrado.
+
+Lista Presupuestada: BetoVelez.111
+
+Walmart-Buenos Aires;1;Azucar chango 1 kg;Azucar chango 1 kg;7.59;7.59; (*)
+Walmart-Buenos Aires;2;Caldo MAGGI 114 grm;Caldo de gallina maggi 114 gr;7.99;7.99; (*)
+Coto-Buenos Aires;5;Aceto balsamico CASALTA manzana 400 cc;Aceto balsamico CASALTA manzana bot 400 cc;30.39; no encontrado; (***)
+
+Lista Presupuestada: BetoVelez.222
+
+Walmart-Buenos Aires;1;Azucar chango 1 kg;Azucar chango 1 kg;7.59;7.59; (*)
+Walmart-Buenos Aires;2;Caldo MAGGI 114 grm;Caldo de gallina maggi 114 gr;7.99;7.99; (*)
+Coto-Buenos Aires;5;Aceto balsamico CASALTA manzana 400 cc;Aceto balsamico CASALTA manzana bot 400 cc;30.39; no encontrado; (***)
+Walmart-Buenos Aires;6;Papel higienico campanita 100m;Papel higienico campanita 100m;24;20; (**)
+Coto-Buenos Aires;7;Leche Entera Laserenisima 1l;Leche Entera Laserenisima 1l;7.50; no encontrado; (***)
+

@@ -1,0 +1,68 @@
+1;Aceite mezcla IDEAL 1,5 ltr
+2;Aceitunas verdes nucete 500 gr
+3;Aji molido DOS ANCLAS 50 grm
+4;ALCO Choclo Crema Blanco 350 gr
+5;Arroz GALLO doble carolina 1 kgm
+6;Arroz KNORR paella 185 grm
+7;Atun natural campagnola 120 gr
+8;Barra cereal manzana light cereal mix 23 gr
+9;BOCA DE DAMA Galletitas Dulces 160 gr
+10;Cafe instantaneo arlistan 100 gr
+11;Cafe molido la virginia 500 gr
+12;Caldo verdura knorr 12 u
+13;CASANCREM Queso Crema 500 gr
+14;Cereal froot loops 20 gr
+15;Choclo cremoso LA CAMPAGNOLA 350 grm
+16;Coco rallado alicante 50 gr
+17;Conserva tomate la campagnola 400 gr
+18;Dulce de leche sancor 1 kg
+19;Duraznos LA GIOCONDA 820 grm
+20;Extracto tomate alco 150 gr
+21;Fideos cabello de angel luchetti 500 gr
+22;Fideos dedalitos terrabusi 500 gr
+23;Fideos municion terrabusi 500 gr
+24;Fideos tallarin don vicente 500 gr
+25;Fideos tirabuzon terrabuzi 500 gr
+26;Gelatina cereza exquisita 500 gr
+27;Gelatina naranja light royal 25 gr
+28;Jardinera alco 350 gr
+29;LA CAMPAGNOLA Atun Al Natural 170 gr
+30;LA SERENiSIMA Leche 1 lt
+31;Lentejas arcor 320 gr
+32;Mani pelado pehuamar 100 gr
+33;Mate cocido saquitos la tranquera 50 un
+34;Mayonesa hellmanns 125 gr
+35;Mayonesa mayoliva 500 cc
+36;Mermelada ciruela bc 390 gr
+37;mermelada damasco canale 454 gr
+38;Mermelada durazno la campagnola 454 gr
+39;mermelada frutilla arcor 454 gr
+40;mermelada naranja arcor 454 gr
+41;Mostaza  natura 500 gr
+42;Mousse chocolate royal 65 gr
+43;Oregano alicante 50 gr
+44;Palitos salados pehuamar 90 gr
+45;Pan hamburguesa con sesamo bimbo 4 u
+46;Pan lactal chico 360 gr
+47;Pan lacteado familiar lactal 660 gr
+48;Pimienta blanca grano 50 gr
+49;Pimiento espanol picante 50 gr
+50;Postre vainilla royal 75 gr
+51;Provenzal alicante 50 gr
+52;Pure de tomate canale 520 gr
+53;Rapiditas light bimbo 330 gr
+54;Romero la parmesana 20 gr
+55;Sabor en cubos tuco knorr 4 u
+56;Sal light dos anclas 100 gr
+57;Salsa pomarola alco 350 gr
+58;Salsa portuguesa arcor 340 gr
+59;SERENITO Postre Nino 210 gr
+60;Sopa crema verduras maggi 65 gr
+61;Te clasico big ben 50 un
+62;Te frutilla la virginia 20 un
+63;Te manzanilla taragui 25 un
+64;Te tilo taragui 25 un
+65;Tomate perita jandaia 400 gr
+66;Tostadas arroz ser 110 gr
+67;Vinagre de alcohol marolio 500 ml
+68;Vinagre manzana dos anclas 500 cc
