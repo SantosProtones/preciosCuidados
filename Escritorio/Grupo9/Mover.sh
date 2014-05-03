@@ -14,12 +14,12 @@ else
     Destino=$2
 
     #Si el origen o el destino no existen retornar error
-    if [ ! -d $Origen -o  ! -d $Destino ]
+    if [ ! -d "$Origen" -o  ! -d "$Destino" ]
     then
         exit $Error
 
     #Si el origen es igual al destino no mover
-    elif [ $Origen == $Destino ]
+    elif [ "$Origen" == "$Destino" ]
     then
         exit $Ok
 
@@ -34,7 +34,7 @@ else
         fi
                 
         #Obtengo el numero de secuencia
-        NumSec=`cat $CONFDIR/Installer.conf | fgrep 'NUMSEC' | cut -f2 -d'='`
+        NumSec=`cat "$CONFDIR/Installer.conf" | fgrep 'NUMSEC' | cut -f2 -d'='`
 	
 	#Incremento el numero de secuencia        
         NumSec=`expr $NumSec + 1`
