@@ -6,6 +6,10 @@
 #LOGEXT='dat'
 #
 
+if [ "$LOGEXT" == "" ]
+	then
+		LOGEXT="log"
+fi
 
 if [ $# -lt 2 -o $# -gt 3 ]
 then 
@@ -37,12 +41,12 @@ Linea="[$When] $Tab [$Who] $Tab [$Where] $Tab [$What] $Tab [$Why]"
 
 #verifico la existencia del archivo de log
 
-ArchLog=$LOGDIR/$Where.$LOGEXT
+ArchLog="$LOGDIR/$Where.$LOGEXT"
 
 if [ -f "$ArchLog" ]
 then
-	NumLineas=`wc -l $ArchLog | cut -f1 -d' '`   #Lineas actuales
-	NumBytes=`wc -c $ArchLog | cut -f1 -d' '` 			#Bytes actuales
+	NumLineas=`wc -l "$ArchLog" | cut -f1 -d' '`   #Lineas actuales
+	NumBytes=`wc -c "$ArchLog" | cut -f1 -d' '` 			#Bytes actuales
 	LOGBYTES=`expr $LOGSIZE \* 1024`	#Bytes permitidos
 
 	#echo "NumLineas: $NumLineas."
@@ -54,19 +58,16 @@ then
 		i=1	
 		while [ $NumLineas -gt 50 ]
 		do
-			sed -i '1d' $ArchLog
+			sed -i '1d' "$ArchLog"
 			i=`expr $i + 1`
-			NumLineas=`wc -l $ArchLog | cut -f1 -d' '`	
+			NumLineas=`wc -l "$ArchLog" | cut -f1 -d' '`	
 		done
-	echo "Log exedido para poder controlar que se está realizando este trabajo">>$ArchLog
+	echo "Log exedido para poder controlar que se está realizando este trabajo">>"$ArchLog"
 	fi
 	#Concateno mi linea
-	echo $Linea>>$ArchLog
+	echo $Linea>>"$ArchLog"
 else
-	echo $Linea>$ArchLog
+	echo $Linea>"$ArchLog"
 fi
 
 fi
-
-
-
