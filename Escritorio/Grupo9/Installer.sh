@@ -528,7 +528,7 @@ if [ -f "$GRUPO/Mover.sh" ]
 fi
 
 echo "Actualizando la configuración del sistema"
-echo "GRUPO=$USER=`timeStamp`" > $CONFDIR/installer.conf
+echo "GRUPO=$GRUPO=$USER=`timeStamp`" > $CONFDIR/installer.conf
 echo "CONFDIR=$CONFDIR=$USER=`timeStamp`" >> $CONFDIR/installer.conf
 echo "BINDIR=$BINDIR=$USER=`timeStamp`" >> $CONFDIR/installer.conf
 echo "MAEDIR=$MAEDIR=$USER=`timeStamp`" >> $CONFDIR/installer.conf
