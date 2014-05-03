@@ -1,12 +1,21 @@
+#!/bin/bash
+
 # Variables que ya tendrian que estar seteadas
-LOGSIZE=100
-LOGDIR="$PWD"
-LOGEXT='dat'
+#LOGSIZE=22
+#LOGDIR="/home/alumnos/Desktop"
+#LOGEXT='dat'
 #
+
+
+if [ $# -lt 2 -o $# -gt 3 ]
+then 
+echo "Cantidad de parámetros inválida"
+else 
+
+
 When=`date`
 Who=`whoami`
 Where=$1
-Temp=$3
 if [ $# -eq 3 ]
 then
 	if [ $3 == 'INFO' -o $3 == 'WAR' -o $3 == 'ERR' ] 
@@ -15,30 +24,39 @@ then
 	else
 		What='INFO'
 	fi
-	Why=$2
+
+
+else 
+What='INFO'
+fi
+Why=$2
 
 #Armo la linea a imprimir en el log
 Tab='        '
-Linea="[$When] $Tab $Who $Tab $Where $Tab $What $Tab $Why"
+Linea="[$When] $Tab [$Who] $Tab [$Where] $Tab [$What] $Tab [$Why]"
 
 #verifico la existencia del archivo de log
 
-ArchLog=$LOGDIR/Logging.$LOGEXT
+ArchLog=$LOGDIR/$Where.$LOGEXT
 
-if [ -f $ArchLog ]
+if [ -f "$ArchLog" ]
 then
-	#Cuento las que hay y dejo las ultimas 50 si hace falta
-	NumLineas=`wc -l $ArchLog | cut -f1 -d' '`
-	
-	if [ $NumLineas -ge $LOGSIZE ] 
+	NumLineas=`wc -l $ArchLog | cut -f1 -d' '`   #Lineas actuales
+	NumBytes=`wc -c $ArchLog | cut -f1 -d' '` 			#Bytes actuales
+	LOGBYTES=`expr $LOGSIZE \* 1024`	#Bytes permitidos
+
+	#echo "NumLineas: $NumLineas."
+	#echo "NumBytes: $NumBytes."
+	#echo "LOGBYTES: $LOGBYTES."
+
+	if [ "$NumBytes" -ge "$LOGBYTES" ] 
 	then
-		#Borro desde la linea 1 hasta la (NumLineas - 50)
 		i=1	
-		TopeBorrado=`expr $LOGSIZE - 50`
-		while [ $i -le $TopeBorrado ]
+		while [ $NumLineas -gt 50 ]
 		do
 			sed -i '1d' $ArchLog
 			i=`expr $i + 1`
+			NumLineas=`wc -l $ArchLog | cut -f1 -d' '`	
 		done
 	echo "Log exedido para poder controlar que se está realizando este trabajo">>$ArchLog
 	fi
@@ -48,18 +66,7 @@ else
 	echo $Linea>$ArchLog
 fi
 
-else
-echo "Cantidad de argumentos invalida"
 fi
-
-
-
-
-
-
-
-
-
 
 
 

@@ -8,11 +8,19 @@ grupo=${actual%/*}
 CONFDIR="$grupo/conf"
 #
 
+#INIT=0 
+#Esta variable indica si el ambiente ya se inicializo antes
+#INIT = 0 -->No inicializado
+#INIT = 1 -->Inicializado
+
 ERRINST=0 
 #En esta variable controlo los errores de instalacion encontrados
 #ERRINST = 0 --> no hay errores
 #ERRINST = 1 --> Hay errores que se ven en el log
 #ERRINST = 2 --> Hay errores que involucran el mecanismo de logging. No se podran loguear
+
+
+
 
 if [ ! -d "$CONFDIR" ]
 then
@@ -45,65 +53,65 @@ else
 		if [ -z $BINDIR ]
 		then
 			BINDIR=$GRUPO/`cat "$CONFDIR/installer.conf" | grep '^BINDIR=' | cut -f2 -d'='`
-			export BINDIR
+			#export BINDIR
 		fi
 
 		if [ -z $MAEDIR ]
 		then
 			MAEDIR=$GRUPO/`cat "$CONFDIR/installer.conf" | grep '^MAEDIR=' | cut -f2 -d'='`
-			export MAEDIR
+			#export MAEDIR
 		fi
 
 		if [ -z $NOVEDIR ]
 		then
 			NOVEDIR=$GRUPO/`cat "$CONFDIR/installer.conf" | grep '^NOVEDIR=' | cut -f2 -d'='`
-			export NOVEDIR	
+			#export NOVEDIR	
 		fi
 	
 		if [ -z $DATASIZE ]
 		then
 			DATASIZE=`cat "$CONFDIR/installer.conf" | grep '^DATASIZE=' | cut -f2 -d'='`
-			export DATASIZE	
+			#export DATASIZE	
 		fi
 		if [ -z $ACEPDIR ]
 		then
 			ACEPDIR=$GRUPO/`cat "$CONFDIR/installer.conf" | grep '^ACEPDIR=' | cut -f2 -d'='`
-			export ACEPDIR		
+			#export ACEPDIR		
 		fi
 
 		if [ -z $RECHDIR ]
 		then
 			RECHDIR=$GRUPO/`cat "$CONFDIR/installer.conf" | grep '^RECHDIR=' | cut -f2 -d'='`
-			export RECHDIR	
+			#export RECHDIR	
 		fi
 
 		if [ -z $INFODIR ]
 		then
 			INFODIR=$GRUPO/`cat "$CONFDIR/installer.conf" | grep '^INFODIR=' | cut -f2 -d'='`
-			export INFODIR	
+			#export INFODIR	
 		fi
 
 		if [ -z $LOGDIR ]
 		then
 			LOGDIR=$GRUPO/`cat "$CONFDIR/installer.conf" | grep '^LOGDIR=' | cut -f2 -d'='`
-			export LOGDIR
+			#export LOGDIR
 		fi
 	
 		if [ -z $LOGEXT ]
 		then
 			LOGEXT=`cat "$CONFDIR/installer.conf" | grep '^LOGEXT=' | cut -f2 -d'='`
-			export LOGEXT	
+			#export LOGEXT	
 		fi
 
 		if [ -z $LOGSIZE ]
 		then	
 			LOGSIZE=`cat "$CONFDIR/installer.conf" | grep '^LOGSIZE=' | cut -f2 -d'='`	
-			export LOGSIZE
+			#export LOGSIZE
 		fi
 
 		
 
-		export CONFDIR
+		#export CONFDIR
 
 
 		#-----------------------------------------------------
@@ -112,17 +120,26 @@ else
 
 
 		#Verifico que existan las carpetas. En algunas (anidado) miro que esten los maestros o los ejecutables
-		if [ ! -d "$GRUPO" ]
-		then 
-			ERRINST=1
-			./Logging.sh Initializer "No existe el directorio $GRUPO" ERR
-		fi
+		#if [ ! -d "$GRUPO" ]
+		#then 
+		#	ERRINST=1
+		#	./Logging.sh Initializer "No existe el directorio $GRUPO" ERR
+		#fi
 
 		#if [ ! -d $CONFDIR ]; then ./Logging.sh Initializer "No existe el directorio $CONFDIR" ERR; fi
 		#Linea borrada porque esta tarea la hago arriba de todo
 
 
-		if [ ! -d "$BINDIR" ]
+
+		#if [ ! -d "$LOGDIR" ]
+		#then
+		#	ERRINST=2
+		#	#./Logging.sh Initializer "No existe el directorio $LOGDIR" ERR
+		#fi
+
+
+
+		if [ ! -d "$BINDIR"  -o ! -d "$LOGDIR" ]
 		then
 			ERRINST=2
 			#./Logging.sh Initializer "No existe el directorio $BINDIR" ERR
@@ -134,16 +151,20 @@ else
 				if [ ! -f  "$BINDIR/Logging.sh" ]
 				then
 					ERRINST=2
-				elif [ ! -x "$BINDIR/Logging.sh" ]
-				then 
-					chmod +x "$BINDIR/Logging.sh"
-					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Logging.sh" INFO
-				 fi
+				else
+					
+					if [ ! -x "$BINDIR/Logging.sh" ]
+					then 
+						chmod +x "$BINDIR/Logging.sh"	
+					fi
+
+					. ./Logging.sh Initializer "Comando Initializer Inicio de ejecución" INFO
+				fi
 				#-----------
 				if [ ! -f  "$BINDIR/Listener.sh" ]
 				then
 					ERRINST=1
-					./Logging.sh Initializer "No se encuentra script Listener" ERR;
+					./Logging.sh Initializer "No se encuentra script Listener" ERR
 				elif [ ! -x "$BINDIR/Listener.sh" ]
 				then 
 					chmod +x "$BINDIR/Listener.sh"
@@ -258,8 +279,8 @@ else
 				#--------------------------------------------
 				if [ ! -f "$MAEDIR/precios.mae" ]
 				then 
-					ERRINST=1
-					./Logging.sh Initializer "No se encontró maestro de precios en el directorio $MAEDIR" ERR
+					#ERRINST=1
+					./Logging.sh Initializer "No se encontró maestro de precios en el directorio $MAEDIR" INFO
 				elif [ ! -r "$MAEDIR/precios.mae" ]
 				then
 					chmod +r "$MAEDIR/precios.mae"
@@ -321,11 +342,7 @@ else
 			fi		
 		fi
 
-		if [ ! -d "$LOGDIR" ]
-		then
-			ERRINST=2
-			#./Logging.sh Initializer "No existe el directorio $LOGDIR" ERR
-		fi
+
 
 
 
@@ -340,8 +357,6 @@ else
 
 	if [ $ERRINST -eq 0 ] # si no hay errores en la instalacion
 	then
-
-
 		#Inicio del demonio Listener y muestra el resumen
 		Respuesta=''
 		PID=''
@@ -354,7 +369,7 @@ else
 			if [ $Respuesta == 'S' ]
 			then
 				sigue=1
-				PID=`ps | grep 'Listener.sh$' | cut -f1 -d' '`
+				PID=`ps | grep 'Listener.sh$' | cut -f2 -d' '`
 				if [ -z $PID ]
 				then
 					./Start.sh Listener
@@ -377,6 +392,33 @@ else
 			fi
 		done
 
+		#exportacion de todas las variables si no fueron exportadas antes
+		if [ $INIT -eq 0 ]
+		then
+			export BINDIR
+
+			export MAEDIR
+
+			export NOVEDIR
+
+			export DATASIZE
+			export ACEPDIR
+			export RECHDIR
+			export INFODIR
+			export LOGDIR
+			export LOGEXT
+			export LOGSIZE
+			export CONFDIR
+
+			INIT=1
+			export INIT
+
+		else
+			MsgYaInit="Ambiente ya inicializado. Si quiere reiniciar termine su sesión e inicie nuevamente"
+			echo "$MsgYaInit"
+			./Logging.sh Initializer "$MsgYaInit" INFO
+		fi
+#fin exportacion
 
 		#AL FINALIZAR MUESTRA EL CONTENIDO DE LAS VARIABLES Y EL PROCESS ID DEL DEMONIO SI ESTA ANDANDO
 
@@ -401,7 +443,7 @@ else
 		echo "Estado del sistema: INICIALIZADO"
 		echo ''
 	
-		PID=`ps | grep 'Listener.sh$' | cut -f1 -d' '`
+		PID=`ps | grep 'Listener.sh$' | cut -f2 -d' '`
 		if [ ! -z $PID ]
 		then 
 			echo "Demonio corriendo bajo el PID: $PID"
@@ -419,6 +461,7 @@ else
 		echo "	2) Directorio de herramientas de RETAILC"
 		echo "	3) Herramienta de loggin de RETAILC"
 		echo "	4) Archivo de configuracion de la instalacion de RETAILC"	
+	
 	fi
 
 

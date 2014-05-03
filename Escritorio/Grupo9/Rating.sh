@@ -36,7 +36,6 @@ MPROC="Archivo a procesar: "
 MERRDUP="Se rechaza el archivo por estar DUPLICADO"
 MERRINV="Se rechaza el archivo por formato INVALIDO"
 MERRVAC="Se rechaza el archivo por estar vacio"
-ACEPEXT="xxx"
 FLPMAE="precios.mae"
 COMANDO="Rating"
 
@@ -107,13 +106,13 @@ function ValidarParametros () {
 }
 
 # Funcion. ContarArchivos
-# Parametros. $1 (extension de archivo) $2 (directorio)
+# Parametros. $1 (directorio)
 # Objetivo. Contar la cantidad de archivos existentes en el directorio 
 # indicado para la extension indicada
  
 function ContarArchivos () {
     local NUMACEP=0
-    NUMACEP=`ls $2*.$1 | wc -l`
+    NUMACEP=`ls $1*.* | wc -l`
     echo $NUMACEP
 }
 
@@ -162,46 +161,34 @@ function ExisteUnidad () {
     echo $EXISTE
 }
 
-# Funcion. ValidarArchivo
+# Funcion. ValidarArchivoCompra
 # Parametros. $1 (ruta archivo) 
-# Objetivo. Verificar la validez del archivo segun su extension
+# Objetivo. Verificar la validez del archivo lista de compra a presupuestar
  
-function ValidarArchivo () {     
+function ValidarArchivoCompra () {     
     if ! [ -s "$1" ]; then
 	    # Valido archivo vacio
 	    echo "$MERRVAC"
 	    return 1
     fi
     
-    # Obtengo la extension del archivo
-    local EXT=${1##*.}
-    
+    # Verifico el formato de cada uno de los registros
     while read LINEA
     do
 	    local NUMTAG=`echo "$LINEA" | grep -c ";"`
 	    if [ $? = 0 ]; then
-	        if [ $EXT = $ACEPEXT ]; then
-		        # Valido lista de compra
-		        if [ $NUMTAG != 1 ]; then 
-		            echo "$MERRINV" 
-		            return 1	
-		        fi
-		
-		        # Checkeo que la unidad sea valida
-		        local UNID=${LINEA##*" "}
-		        local POSUNID=`ExisteUnidad $UNID`
-		        if [ $POSUNID = 0 ]; then
-		            echo "$MERRINV"
-		            return 1
-		        fi
+	        # Valido lista de compra
+	        if [ $NUMTAG != 1 ]; then 
+	            echo "$MERRINV" 
+	            return 1	
 	        fi
-
-	        if [ $EXT = ${FLPMAE##*.} ]; then
-		        # Valido lista de precio maestra
-		        if [ $NUMTAG != 4 ]; then 
-		            echo "$MERRINV" 
-		            return 1
-		        fi
+	
+	        # Checkeo que la unidad sea valida
+	        local UNID=${LINEA##*" "}
+	        local POSUNID=`ExisteUnidad $UNID`
+	        if [ $POSUNID = 0 ]; then
+	            echo "$MERRINV"
+	            return 1
 	        fi
 	    else
 	        echo "$MERRINV"
@@ -299,7 +286,7 @@ fi
 # Logueo mensaje inicial de Rating
 `$PWD/Logging.sh "$COMANDO" "$MLOGINI1" "INFO"`
 
-NUMACEP=`ContarArchivos "$ACEPEXT" "$ACEPDIR"`
+NUMACEP=`ContarArchivos "$ACEPDIR"`
 
 # Logueo el numero de archivos a presupuestar
 `$PWD/Logging.sh "$COMANDO" "$MLOGINI2 $NUMACEP" "INFO"`
@@ -318,7 +305,7 @@ else
     fi
 
     # Recupero las listas de comparas a procesar
-    `ls "$ACEPDIR"*."$ACEPEXT" -1 > "$PWD/LISTTEMP"`
+    `ls "$ACEPDIR"*.* -1 > "$PWD/LISTTEMP"`
     
     while read ARCHIVO
     do
@@ -333,7 +320,7 @@ else
             `$PWD/Mover.sh "$ARCHIVO" "$RECHDIR" "$COMANDO"`
         else 
             # Valida que el archivo lista de compra sea valido
-            MENSERR=`ValidarArchivo "$ARCHIVO"`
+            MENSERR=`ValidarArchivoCompra "$ARCHIVO"`
             
 	        if ! [ -z "$MENSERR" ]; then
 		        # Error de validacion se mueve archivo a rechazados
