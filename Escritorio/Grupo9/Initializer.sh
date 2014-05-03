@@ -164,35 +164,35 @@ else
 				if [ ! -f  "$BINDIR/Listener.sh" ]
 				then
 					ERRINST=1
-					./Logging.sh Initializer "No se encuentra script Listener" ERR
+					. ./Logging.sh Initializer "No se encuentra script Listener" ERR
 				elif [ ! -x "$BINDIR/Listener.sh" ]
 				then 
 					chmod +x "$BINDIR/Listener.sh"
-					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Listener.sh" INFO
+					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Listener.sh" INFO
 				 fi
 
 				#------------
 				if [ ! -f  "$BINDIR/Masterlist.sh" ]
 				then
 					ERRINST=1
-					./Logging.sh Initializer "No se encuentra script Masterlist" ERR
+					. ./Logging.sh Initializer "No se encuentra script Masterlist" ERR
 
 				elif [ ! -x "$BINDIR/Masterlist.sh" ]
 				then
 					chmod +x "$BINDIR/Masterlist.sh"
-					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Masterlist.sh" INFO
+					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Masterlist.sh" INFO
 
 				fi
 				#------------
 				if [ ! -f "$BINDIR/Rating.sh" ]
 				then
 					ERRINST=1
-					./Logging.sh Initializer "No se encuentra script Rating" ERR
+					. ./Logging.sh Initializer "No se encuentra script Rating" ERR
 
 				elif [ ! -x "$BINDIR/Rating.sh" ]
 				then
 					chmod +x "$BINDIR/Rating.sh"
-					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Rating.sh" INFO
+					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Rating.sh" INFO
 
 				fi
 				#--------------
@@ -200,23 +200,23 @@ else
 				if [ ! -f  "$BINDIR/Reporting.pl" ]
 				then
 					ERRINST=1
-					./Logging.sh Initializer "No se encuentra Reporting" ERR
+					. ./Logging.sh Initializer "No se encuentra Reporting" ERR
 
 				elif [  ! -x  "$BINDIR/Reporting.pl"  ]
 				then
 					chmod +x "$BINDIR/Reporting.pl"
-					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Reporting.pl" INFO
+					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Reporting.pl" INFO
 
 				fi
 				#---------------
 				if [ ! -f  "$BINDIR/Mover.sh" ]
 				then
 					ERRINST=1
-					./Logging.sh Initializer "No se encuentra Mover" ERR
+					. ./Logging.sh Initializer "No se encuentra Mover" ERR
 				elif [ ! -x  "$BINDIR/Mover.sh" ]
 				then
 					chmod +x "$BINDIR/Mover.sh"
-					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Mover.sh" INFO
+					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Mover.sh" INFO
 	
 				fi
 				#----------------
@@ -224,22 +224,22 @@ else
 				if [ ! -f  "$BINDIR/Start.sh" ]
 				then
 					ERRINST=1
-					./Logging.sh Initializer "No se encuentra Start" ERR
+					. ./Logging.sh Initializer "No se encuentra Start" ERR
 				elif [ ! -x  "$BINDIR/Start.sh" ]
 				then
 					chmod +x "$BINDIR/Start.sh"
-					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Start.sh" INFO
+					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Start.sh" INFO
 				fi
 				#----------------
 
 				if [ ! -f  "$BINDIR/Stop.sh" ]
 				then
 					ERRINST=1
-					./Logging.sh Initializer "No se encuentra Stop" ERR
+					. ./Logging.sh Initializer "No se encuentra Stop" ERR
 				elif [ ! -x  "$BINDIR/Stop.sh" ]
 				then
 					chmod +x "$BINDIR/Stop.sh"
-					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Stop.sh" INFO
+					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Stop.sh" INFO
 				fi
 
 		fi #Fin de cosas de bindir
@@ -259,44 +259,44 @@ else
 				if [ ! -f "$MAEDIR/asociados.mae" ]
 				then 
 					ERRINST=1
-					./Logging.sh Initializer "No se encontro maestro de asociados y colaboradores en el directorio $MAEDIR"  ERR
+					. ./Logging.sh Initializer "No se encontro maestro de asociados y colaboradores en el directorio $MAEDIR"  ERR
 
 				elif [ ! -r "$MAEDIR/asociados.mae" ]	
 				then
 					chmod +r "$MAEDIR/asociados.mae"
-					./Logging.sh Initializer "Se otorgaron permisos de lectura sobre asociados.mae"  INFO
+					. ./Logging.sh Initializer "Se otorgaron permisos de lectura sobre asociados.mae"  INFO
 				fi
 				#--------------------------------------------
 				if [ ! -f "$MAEDIR/super.mae" ]
 				then
 					ERRINST=1
-					./Logging.sh Initializer "No se encontró maestro de supermercados en el directorio $MAEDIR" ERR
+					. ./Logging.sh Initializer "No se encontró maestro de supermercados en el directorio $MAEDIR" ERR
 				elif [ ! -r "$MAEDIR/super.mae" ]
 				then 
 					chmod +r "$MAEDIR/super.mae"
-					./Logging.sh Initializer "Se otorgaron permisos de lectura sobre super.mae"  INFO
+					. ./Logging.sh Initializer "Se otorgaron permisos de lectura sobre super.mae"  INFO
 				fi
 				#--------------------------------------------
 				if [ ! -f "$MAEDIR/precios.mae" ]
 				then 
 					#ERRINST=1
-					./Logging.sh Initializer "No se encontró maestro de precios en el directorio $MAEDIR" INFO
+					. ./Logging.sh Initializer "No se encontró maestro de precios en el directorio $MAEDIR" INFO
 				elif [ ! -r "$MAEDIR/precios.mae" ]
 				then
 					chmod +r "$MAEDIR/precios.mae"
-					./Logging.sh Initializer "Se otorgaron permisos de lectura sobre precios.mae"  INFO
+					. ./Logging.sh Initializer "Se otorgaron permisos de lectura sobre precios.mae"  INFO
 				fi
 				#---------------------------------------------
 
 				if [ ! -f "$MAEDIR/um.tab" ]
 				then
 					ERRINST=1
-					./Logging.sh Initializer "No se encontró la tabla de equivalencias de unidades de medida en el directorio $MAEDIR" ERR
+					. ./Logging.sh Initializer "No se encontró la tabla de equivalencias de unidades de medida en el directorio $MAEDIR" ERR
 	
 				elif [ ! -r "$MAEDIR/um.tab" ]
 				then
 					chmod +r "$MAEDIR/um.tab"
-					./Logging.sh Initializer "Se otorgaron permisos de lectura sobre um.tab"  INFO
+					. ./Logging.sh Initializer "Se otorgaron permisos de lectura sobre um.tab"  INFO
 				fi
 				#---------------------------------------------
 
@@ -310,7 +310,7 @@ else
 			if [ $ERRINST -ne 2 ]
 			then
 				ERRINST=1
-				./Logging.sh Initializer "No existe el directorio $NOVEDIR" ERR
+				. ./Logging.sh Initializer "No existe el directorio $NOVEDIR" ERR
 			fi
 		fi
 
@@ -320,7 +320,7 @@ else
 			if [ $ERRINST -ne 2 ]
 			then
 				ERRINST=1
-				./Logging.sh Initializer "No existe el directorio $ACEPDIR" ERR
+				. ./Logging.sh Initializer "No existe el directorio $ACEPDIR" ERR
 			fi
 		fi
 
@@ -329,7 +329,7 @@ else
 			if [ $ERRINST -ne 2 ]
 			then		
 				ERRINST=1
-				./Logging.sh Initializer "No existe el directorio $RECHDIR" ERR
+				. ./Logging.sh Initializer "No existe el directorio $RECHDIR" ERR
 			fi		
 		fi
 
@@ -338,7 +338,7 @@ else
 			if [ $ERRINST -ne 2 ]
 			then	
 				ERRINST=1
-				./Logging.sh Initializer "No existe el directorio $INFODIR" ERR
+				. ./Logging.sh Initializer "No existe el directorio $INFODIR" ERR
 			fi		
 		fi
 
@@ -372,12 +372,12 @@ else
 				PID=`ps | grep 'Listener.sh$' | cut -f2 -d' '`
 				if [ -z $PID ]
 				then
-					./Start.sh Listener
+					. ./Start.sh Listener
 					echo "Demonio iniciado. Puede detenerlo manualmente escribiendo \"Stop Listener.sh \" y presionando Enter"
 				else 
 					yaEstaba="Listener ya estaba iniciado. PID: $PID"
 					echo $yaEstaba
-					./Logging.sh Initializer $yaEstaba INFO
+					. ./Logging.sh Initializer $yaEstaba INFO
 
 				fi
 	
@@ -416,7 +416,7 @@ else
 		else
 			MsgYaInit="Ambiente ya inicializado. Si quiere reiniciar termine su sesión e inicie nuevamente"
 			echo "$MsgYaInit"
-			./Logging.sh Initializer "$MsgYaInit" INFO
+			. ./Logging.sh Initializer "$MsgYaInit" INFO
 		fi
 #fin exportacion
 
