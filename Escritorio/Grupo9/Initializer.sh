@@ -357,43 +357,8 @@ else
 
 	if [ $ERRINST -eq 0 ] # si no hay errores en la instalacion
 	then
-		#Inicio del demonio Listener y muestra el resumen
-		Respuesta=''
-		PID=''
-		sigue=0
-		while [ $sigue -eq 0 ]
-		do 
-
-			read -n 1 -p "Desea efectuar la activacion de Listener? (S/N): " Respuesta 
-			echo ''
-			if [ $Respuesta == 'S' ]
-			then
-				sigue=1
-				PID=`ps | grep 'Listener.sh$' | cut -f2 -d' '`
-				if [ -z $PID ]
-				then
-					. ./Start.sh Listener
-					echo "Demonio iniciado. Puede detenerlo manualmente escribiendo \"Stop Listener.sh \" y presionando Enter"
-				else 
-					yaEstaba="Listener ya estaba iniciado. PID: $PID"
-					echo $yaEstaba
-					. ./Logging.sh Initializer $yaEstaba INFO
-
-				fi
-	
-
-			elif [ $Respuesta == 'N' ] 
-			then
-				sigue=1
-				echo "No se arrancará Listener. Para ejecutarlo manualmente escriba \"Start Listener.sh\" y presione Enter"
-		
-			else
-			echo "Respuesta inválida"
-			fi
-		done
-
 		#exportacion de todas las variables si no fueron exportadas antes
-		if [ $INIT -eq 0 ]
+		if [ -z "$INIT"] || [ $INIT -eq 0 ]
 		then
 			export BINDIR
 
@@ -418,7 +383,44 @@ else
 			echo "$MsgYaInit"
 			. ./Logging.sh Initializer "$MsgYaInit" INFO
 		fi
-#fin exportacion
+		#fin exportacion
+		#Inicio del demonio Listener y muestra el resumen
+		Respuesta=''
+		PID=''
+		sigue=0
+		while [ $sigue -eq 0 ]
+		do 
+
+			read -n 1 -p "Desea efectuar la activacion de Listener? (S/N): " Respuesta 
+			echo ''
+			if [ $Respuesta == 'S' ]
+			then
+				sigue=1
+				PID=`ps | grep 'Listener.sh$' | cut -f2 -d' '`
+				if [ -z $PID ]
+				then
+					./Start.sh Listener.sh
+					echo "Demonio iniciado. Puede detenerlo manualmente escribiendo \"Stop Listener.sh \" y presionando Enter"
+				else 
+					yaEstaba="Listener ya estaba iniciado. PID: $PID"
+					echo $yaEstaba
+					. ./Logging.sh Initializer $yaEstaba INFO
+
+				fi
+	
+
+			elif [ $Respuesta == 'N' ] 
+			then
+				sigue=1
+				echo "No se arrancará Listener. Para ejecutarlo manualmente escriba \"Start Listener.sh\" y presione Enter"
+		
+			else
+			echo "Respuesta inválida"
+			fi
+		done
+
+		
+
 
 		#AL FINALIZAR MUESTRA EL CONTENIDO DE LAS VARIABLES Y EL PROCESS ID DEL DEMONIO SI ESTA ANDANDO
 

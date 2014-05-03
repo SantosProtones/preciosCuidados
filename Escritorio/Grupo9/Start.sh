@@ -17,10 +17,10 @@ if [ $# -ne 1 ]; then
 fi
 
 # Chequeo que el ambiente haya sido inicializado
-if [ -z "$INICIALIZADO" ]; then
-	echo "La inicialización de ambiente no fue realizada al momento de utilizar el comando Start"
+if [ -z "$INIT" ] || [ $INIT -ne 1 ]; then
+      echo "La inicialización de ambiente no fue realizada al momento de utilizar el comando Start"
 #	./Logging.sh "Start" "La inicialización de ambiente no fue realizada al momento de utilizar el comando Start" "ERR"
-	exit 2
+      exit 2
 fi
 
 COMANDO=$1
