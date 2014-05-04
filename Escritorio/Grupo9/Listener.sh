@@ -89,9 +89,9 @@ else
 				
 						if [ $fecha_novedad -eq $fecha_valida ]; then
 							if [ $fecha_novedad -gt '20140101' ]; then
-								mensaje="Archivo $novedad aceptado"
+								mensaje="Archivo $novedad aceptado. Es lista de Precios"
 								`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "INFO"`
-								`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$ACEPDIR" "Listener.sh"`	
+								`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$MAEDIR/precios" "Listener.sh"`	
 #								echo $novedad "es lista de precios, mover archivo a MAEDIR/precios"
 								continue
 							else									
@@ -122,7 +122,7 @@ else
 # 3.a.c La novedad es lista de compras
 						if [ $existe_asociado -eq 1 ];then
 							
-							mensaje="Archivo $novedad aceptado"
+							mensaje="Archivo $novedad aceptado. Es lista de Compras"
 							`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "INFO"`
 							`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$ACEPDIR" "Listener.sh"`
 #							echo $novedad "es lista de compras, mover archivo a ACEPDIR"
