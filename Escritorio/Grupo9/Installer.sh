@@ -1,6 +1,7 @@
 #Variables initialization. Default values.
 GRUPO="$(dirname "$(readlink -f "$0")")"
 CONFDIR=conf
+DATADIR=datos
 BINDIR=bin
 MAEDIR=mae
 NOVEDIR=arribos
@@ -122,15 +123,39 @@ function askUser() {
 	echo $RESP
 }
 
+function isDirectoryNameTaken() {
+	local FOUND="false"
+
+	if [ -d "$GRUPO/$1" ]
+		then
+			FOUND="true"
+		else
+			for i in "${DIRECTORYNAMESTAKEN[@]}"
+			do
+				if [ "$i" == "$1" ]
+					then
+						FOUND="true"
+						break
+				fi
+			done
+	fi
+	echo $FOUND
+}
+
 function askForDirectoryName() {
 	DIRNAME=""
 	while [ true ];
 	do
 		read -p "$1" DIRNAME
 		case $DIRNAME in
-			"conf" | "datos" )	echo "$DIRNAME es un nombre de directorio reservado";;
-			"" )					echo "$INFO_DIRNAME_CANNOT_BE_EMPTY";;
-			* )					break;;
+			"$CONFDIR" | "$DATADIR" )	echo "\"$DIRNAME\" es un nombre de directorio reservado";;
+			"" )								echo "$INFO_DIRNAME_CANNOT_BE_EMPTY";;
+			* )								if [ `isDirectoryNameTaken "$DIRNAME"` == "true" ]
+												then
+													echo "El nombre \"$DIRNAME\" ya fue seleccionado para otro directorio";
+												else
+													break
+											fi;;
 		esac
 	done
 }
@@ -149,7 +174,7 @@ function askForSize() {
 	done
 }
 
-if [ ! -d conf -o ! -d datos ];
+if [ ! -d "$GRUPO/$CONFDIR" -o ! -d "$GRUPO/$DATADIR" ];
 	then
 		echo "$ERROR_REQUIRED_COMPONENTS_NOT_FOUND"
 		exit $ERROR_CODE_REQUIRED_COMPONENTS_NOT_FOUND
@@ -227,6 +252,14 @@ if [ ! -d "$GRUPO/$MAEDIR" ];
 		MISSING=("${MISSING[@]}" "$MAEDIR")
 	else
 		INSTALLED=("${INSTALLED[@]}" "$MAEDIR")
+		if [ ! -d "$GRUPO/$MAEDIR/precios" ]
+			then
+				MISSING=("${MISSING[@]}" "$MAEDIR/precios")
+		fi
+		if [ ! -d "$GRUPO/$MAEDIR/precios/proc" ]
+			then
+				MISSING=("${MISSING[@]}" "$MAEDIR/precios/proc")
+		fi
 fi
 
 if [ ! -d "$GRUPO/$NOVEDIR" ];
@@ -241,6 +274,10 @@ if [ ! -d "$GRUPO/$ACEPDIR" ];
 		MISSING=("${MISSING[@]}" "$ACEPDIR")
 	else
 		INSTALLED=("${INSTALLED[@]}" "$ACEPDIR")
+		if [ ! -d "$GRUPO/$ACEPDIR/proc" ]
+			then
+				MISSING=("${MISSING[@]}" "$ACEPDIR/proc")
+		fi
 fi
 
 if [ ! -d "$GRUPO/$INFODIR" ];
@@ -248,6 +285,10 @@ if [ ! -d "$GRUPO/$INFODIR" ];
 		MISSING=("${MISSING[@]}" "$INFODIR")
 	else
 		INSTALLED=("${INSTALLED[@]}" "$INFODIR")
+		if [ ! -d "$GRUPO/$INFODIR/pres" ]
+			then
+				MISSING=("${MISSING[@]}" "$INFODIR/pres")
+		fi
 fi
 
 if [ ! -d "$GRUPO/$RECHDIR" ];
@@ -330,6 +371,16 @@ if [ ! ${#INSTALLED[@]} -eq 0 ]
 						log "Direct Maestros y Tablas: $MAEDIR" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
 				fi
 
+				if [ `isMissing "$MAEDIR/precios"` == "true" ]
+					then
+						log "Subdirectorio del Direct Maestros y Tablas: $MAEDIR/precios" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
+				fi
+
+				if [ `isMissing "$MAEDIR/precios/proc"` == "true" ]
+					then
+						log "Subdirectorio del Direct Maestros y Tablas: $MAEDIR/precios/proc" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
+				fi
+
 				if [ `isMissing "$NOVEDIR"` == "true" ]
 					then
 						log "Directorio de Novedades: $NOVEDIR" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
@@ -340,9 +391,19 @@ if [ ! ${#INSTALLED[@]} -eq 0 ]
 						log "Dir. Novedades Aceptadas: $ACEPDIR" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
 				fi
 
+				if [ `isMissing "$ACEPDIR/proc"` == "true" ]
+					then
+						log "Subdirectorio del Dir. Novedades Aceptadas: $ACEPDIR/proc" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
+				fi
+
 				if [ `isMissing "$INFODIR"` == "true" ]
 					then
 						log "Dir. Informes de Salida: $INFODIR" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
+				fi
+
+				if [ `isMissing "$INFODIR/pres"` == "true" ]
+					then
+						log "Subdirectorio del Dir. Informes de Salida: $INFODIR/pres" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
 				fi
 
 				if [ `isMissing "$RECHDIR"` == "true" ]
@@ -403,6 +464,7 @@ if [ `isMissing "$BINDIR"` == "true" ]
 		askForDirectoryName "Defina el directorio de instalación de los ejecutables ($BINDIR): "
 		replaceInMissing "$BINDIR" "$DIRNAME"
 		BINDIR=$DIRNAME
+		DIRECTORYNAMESTAKEN=("${DIRECTORYNAMESTAKEN[@]}" "$DIRNAME")
 		log "Defina el directorio de instalación de los ejecutables ($BINDIR): $BINDIR" "$GRUPO/$CONFDIR/installer" "INFO"
 fi
 
@@ -411,6 +473,7 @@ if [ `isMissing "$MAEDIR"` == "true" ]
 		askForDirectoryName "Defina directorio para maestros y tablas ($MAEDIR): "
 		replaceInMissing "$MAEDIR" "$DIRNAME"
 		MAEDIR=$DIRNAME
+		DIRECTORYNAMESTAKEN=("${DIRECTORYNAMESTAKEN[@]}" "$DIRNAME")
 		log "Defina directorio para maestros y tablas ($MAEDIR): $MAEDIR" "$GRUPO/$CONFDIR/installer" "INFO"
 fi
 
@@ -419,6 +482,7 @@ if [ `isMissing "$NOVEDIR"` == "true" ]
 		askForDirectoryName "Defina el Directorio de arribo de novedades ($NOVEDIR): "
 		replaceInMissing "$NOVEDIR" "$DIRNAME"
 		NOVEDIR=$DIRNAME
+		DIRECTORYNAMESTAKEN=("${DIRECTORYNAMESTAKEN[@]}" "$DIRNAME")
 		log "Defina el Directorio de arribo de novedades ($NOVEDIR): $NOVEDIR" "$GRUPO/$CONFDIR/installer" "INFO"
 
 		askForSize "Defina espacio mínimo libre para el arribo de novedades en Mbytes ($DATASIZE): "
@@ -443,6 +507,7 @@ if [ `isMissing "$ACEPDIR"` == "true" ]
 		askForDirectoryName "Defina el directorio de grabación de las Novedades aceptadas ($ACEPDIR): "
 		replaceInMissing "$ACEPDIR" "$DIRNAME"
 		ACEPDIR=$DIRNAME
+		DIRECTORYNAMESTAKEN=("${DIRECTORYNAMESTAKEN[@]}" "$DIRNAME")
 		log "Defina el directorio de grabación de las Novedades aceptadas ($ACEPDIR): $ACEPDIR" "$GRUPO/$CONFDIR/installer" "INFO"
 fi
 
@@ -451,6 +516,7 @@ if [ `isMissing "$INFODIR"` == "true" ]
 		askForDirectoryName "Defina el directorio de grabación de los informes de salida ($INFODIR): "
 		replaceInMissing "$INFODIR" "$DIRNAME"
 		INFODIR=$DIRNAME
+		DIRECTORYNAMESTAKEN=("${DIRECTORYNAMESTAKEN[@]}" "$DIRNAME")
 		log "Defina el directorio de grabación de los informes de salida ($INFODIR): $INFODIR" "$GRUPO/$CONFDIR/installer" "INFO"
 fi
 
@@ -459,6 +525,7 @@ if [ `isMissing "$RECHDIR"` == "true" ]
 		askForDirectoryName "Defina el directorio de grabación de Archivos rechazados ($RECHDIR): "
 		replaceInMissing "$RECHDIR" "$DIRNAME"
 		RECHDIR=$DIRNAME
+		DIRECTORYNAMESTAKEN=("${DIRECTORYNAMESTAKEN[@]}" "$DIRNAME")
 		log "Defina el directorio de grabación de Archivos rechazados ($RECHDIR): $RECHDIR" "$GRUPO/$CONFDIR/installer" "INFO"
 fi
 
@@ -467,6 +534,7 @@ if [ `isMissing "$LOGDIR"` == "true" ]
 		askForDirectoryName "Defina el directorio de logs ($LOGDIR): "
 		replaceInMissing "$LOGDIR" "$DIRNAME"
 		LOGDIR=$DIRNAME
+		DIRECTORYNAMESTAKEN=("${DIRECTORYNAMESTAKEN[@]}" "$DIRNAME")
 		log "Defina el directorio de logs ($LOGDIR): $LOGDIR" "$GRUPO/$CONFDIR/installer" "INFO"
 
 		LOGEXT=`askUser "Ingrese la extensión para los archivos de log: (.$LOGEXT): "`
@@ -518,47 +586,72 @@ done
 echo "$TITLE_CREATING_DIRECTORY_STRUCTURE"
 if [ `isMissing "$BINDIR"` == "true" ]
 	then
-		mkdir -p "$BINDIR"
+		mkdir -p "$GRUPO/$BINDIR"
 		echo "$BINDIR"
 fi
 
 if [ `isMissing "$MAEDIR"` == "true" ]
 	then
-		mkdir -p "$MAEDIR/precios/proc"
+		mkdir -p "$GRUPO/$MAEDIR/precios/proc"
 		echo "$MAEDIR"
 		echo "$MAEDIR/precios"
 		echo "$MAEDIR/precios/proc"
+	else
+		if [ `isMissing "$MAEDIR/precios"` == "true" ]
+			then
+				mkdir -p "$GRUPO/$MAEDIR/precios/proc"
+				echo "$MAEDIR/precios"
+				echo "$MAEDIR/precios/proc"
+			else
+				if [ `isMissing "$MAEDIR/precios/proc"` == "true" ]
+					then
+						mkdir -p "$GRUPO/$MAEDIR/precios/proc"
+						echo "$MAEDIR/precios/proc"
+				fi
+		fi
 fi
 
 if [ `isMissing "$NOVEDIR"` == "true" ]
 	then
-		mkdir -p "$NOVEDIR"
+		mkdir -p "$GRUPO/$NOVEDIR"
 		echo "$NOVEDIR"
 fi
 
 if [ `isMissing "$ACEPDIR"` == "true" ]
 	then
-		mkdir -p "$ACEPDIR/proc"
+		mkdir -p "$GRUPO/$ACEPDIR/proc"
 		echo "$ACEPDIR"
 		echo "$ACEPDIR/proc"
+	else
+		if [ `isMissing "$ACEPDIR/proc"` == "true" ]
+			then
+				mkdir -p "$GRUPO/$ACEPDIR/proc"
+				echo "$ACEPDIR/proc"
+		fi
 fi
 
 if [ `isMissing "$INFODIR"` == "true" ]
 	then
-		mkdir -p "$INFODIR/pres"
+		mkdir -p "$GRUPO/$INFODIR/pres"
 		echo "$INFODIR"
 		echo "$INFODIR/pres"
+	else
+		if [ `isMissing "$INFODIR/pres"` == "true" ]
+			then
+				mkdir -p "$GRUPO/$INFODIR/pres"
+				echo "$INFODIR/pres"
+		fi
 fi
 
 if [ `isMissing "$RECHDIR"` == "true" ]
 	then
-		mkdir -p "$RECHDIR"
+		mkdir -p "$GRUPO/$RECHDIR"
 		echo "$RECHDIR"
 fi
 
 if [ `isMissing "$LOGDIR"` == "true" ]
 	then
-		mkdir -p "$LOGDIR"
+		mkdir -p "$GRUPO/$LOGDIR"
 		echo "$LOGDIR"
 fi
 
