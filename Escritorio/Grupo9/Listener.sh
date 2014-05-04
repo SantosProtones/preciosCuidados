@@ -26,8 +26,7 @@ asociados="$MAEDIR/asociados.mae"
 #----------------------------------------------------------------------------------------------------------------------
 
 T_SLEEP=30 # Tiempo de espera entre cada vuelta (en seg)
-loop=0
-RETURN=1 # Sistema inicializado  
+loop=0 
 
 #----------------------------------------------------------------------------------------------------------------------
 #
@@ -35,17 +34,17 @@ RETURN=1 # Sistema inicializado
 #
 #----------------------------------------------------------------------------------------------------------------------
 
-if [ $RETURN == 0 ]; then
+if [ $INIT -eq 0 ]; then
 	echo "No Se Ejecuta Comando Listener, No Ha Sido Inicializado El Sistema"
 	return 1
 else
 	pid_listener=`ps -e | grep -e 'Listener.sh$' | awk '{print $1}'`
-	
 	for ((  ; 1 == 1 ; )); do
 	
 # 1. Grabar en el Log el nro de ciclo.
 		loop=`expr $loop+1 | bc`
 		mensaje="PID Listener.sh: $pid_listener Ciclo $loop Hora: $(date +%T)"
+		echo $BINDIR 	
 		`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "INFO"`
 
 # 2. Chequear si hay archivos en el directorio $NOVEDIR
@@ -159,11 +158,14 @@ else
 # 7.b. PID MasterList
 			pid_masterlist=`ps -e | grep -e 'MasterList.sh$' | awk '{print $1}'`
 			if [ -z $pid_masterlist ]; then
-				echo "Ejecutar ./MasterList.sh"
-				pid_masterlist=`ps -e | grep -e 'MasterList.sh$' | awk '{print $1}'`
-				echo "PID De MasterList Lanzado: $pid_masterlist"
+#				echo "Ejecutar ./MasterList.sh"
+				`$BINDIR/Masterlist.sh`
+				pid_masterlist=`ps -e | grep -e 'Masterlist.sh$' | awk '{print $1}'`
+				mensaje="PID De MasterList Lanzado: $pid_masterlist"
+				`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "INFO"`
 			else
-				echo "El proceso MasterList.sh ya está ejecutándose"
+				mensaje="El proceso MasterList.sh ya está ejecutándose"
+				`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "WAR"`
 			fi
 
 		fi
@@ -177,11 +179,14 @@ else
 # 7.b. PID MasterList
 			pid_rating=`ps -e | grep -e 'Rating.sh$' | awk '{print $1}'`
 			if [ -z $pid_rating ]; then
-				echo "Ejecutar ./Rating.sh"
+#				echo "Ejecutar ./Rating.sh"
+				`$BINDIR/Rating.sh $ACEPDIR $MAEDIR $INFODIR $RECHDIR`
 				pid_rating=`ps -e | grep -e 'Rating.sh$' | awk '{print $1}'`
-				echo "PID De Rating Lanzado: $pid_Rating"
+				mensaje="PID De Rating Lanzado: $pid_Rating"
+				`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "INFO"`
 			else
-				echo "El proceso Rating.sh ya está ejecutándose"
+				mensaje="El proceso Rating.sh ya está ejecutándose"
+				`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "WAR"`
 			fi
 
 		fi
