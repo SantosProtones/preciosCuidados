@@ -6,10 +6,10 @@
 #
 #----------------------------------------------------------------------------------------------------------------------
 
-NOVEDIR="../arribos"
-ACEPDIR="../aceptados"
-RECHDIR="../rechazados"
-MAEDIR="../mae"
+#NOVEDIR="../arribos"
+#ACEPDIR="../aceptados"
+#RECHDIR="../rechazados"
+#MAEDIR="../mae"
 PRECDIR="$MAEDIR/precios"
 asociados="$MAEDIR/asociados.mae"
 
@@ -46,7 +46,7 @@ else
 # 1. Grabar en el Log el nro de ciclo.
 		loop=`expr $loop+1 | bc`
 		mensaje="PID Listener.sh: $pid_listener Ciclo $loop Hora: $(date +%T)"
-		`$PWD/Logging.sh "Listener.sh" "$mensaje" "INFO"`
+		`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "INFO"`
 
 # 2. Chequear si hay archivos en el directorio $NOVEDIR
 		cantidad_novedades=`ls "$NOVEDIR/" | wc -l`
@@ -64,8 +64,9 @@ else
 						file "$NOVEDIR/$novedad" | grep -e "empty" > /dev/null
 						if [ $? -ne 0 ]; then
 							mensaje="Archivo $novedad rechazado. Tipo de archivo Invalido"
-							`$PWD/Logging.sh "Listener.sh" "$mensaje" "ERR"`
-							echo $novedad "no es un archivo valido, mover archivo a RECHDIR. Tipo de archivo Invalido"
+							`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "ERR"`
+							`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$RECHDIR" "Listener.sh"`
+#   						echo $novedad "no es un archivo valido, mover archivo a RECHDIR. Tipo de archivo Invalido"
 						continue
 						fi
 					fi
@@ -90,17 +91,20 @@ else
 						if [ $fecha_novedad -eq $fecha_valida ]; then
 							if [ $fecha_novedad -gt '20140101' ]; then
 								mensaje="Archivo $novedad aceptado"
-								`$PWD/Logging.sh "Listener.sh" "$mensaje" "INFO"`
-								echo $novedad "es lista de precios, mover archivo a MAEDIR/precios"
+								`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "INFO"`
+								`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$ACEPDIR" "Listener.sh"`	
+#								echo $novedad "es lista de precios, mover archivo a MAEDIR/precios"
 								continue
 							else									
 								mensaje="Archivo $novedad rechazado. Fecha invalida"
-								`$PWD/Logging.sh "Listener.sh" "$mensaje" "ERR"`								
+								`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "ERR"`
+								`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$RECHDIR" "Listener.sh"`								
 								continue
 							fi
 						else
 							mensaje="Archivo $novedad rechazado. Fecha invalida"
-							`$PWD/Logging.sh "Listener.sh" "$mensaje" "ERR"`								
+							`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "ERR"`
+							`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$RECHDIR" "Listener.sh"`								
 							continue
 						fi
 					fi
@@ -120,27 +124,30 @@ else
 						if [ $existe_asociado -eq 1 ];then
 							
 							mensaje="Archivo $novedad aceptado"
-							`$PWD/Logging.sh "Listener.sh" "$mensaje" "INFO"`															
-							echo $novedad "es lista de compras, mover archivo a ACEPDIR"
+							`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "INFO"`
+							`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$ACEPDIR" "Listener.sh"`
+#							echo $novedad "es lista de compras, mover archivo a ACEPDIR"
 							continue
 						else
 	
 							mensaje="Archivo $novedad rechazado. Asociado inexistente"
-							`$PWD/Logging.sh "Listener.sh" "$mensaje" "ERR"`		
-							echo $novedad "no es un archivo valido, mover archivo a RECHDIR. Asociado inexistente"
+							`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "ERR"`
+							`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$RECHDIR" "Listener.sh"`		
+#							echo $novedad "no es un archivo valido, mover archivo a RECHDIR. Asociado inexistente"
 							continue 					
 						fi
 					fi
  					mensaje="Archivo $novedad rechazado. Nombre del archivo con formato invalido"
-					`$PWD/Logging.sh "Listener.sh" "$mensaje" "ERR"`				
-					echo $novedad "no es un archivo valido, mover archivo a RECHDIR. Nombre del archivo con formato invalido"	
+					`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "ERR"`
+					`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$RECHDIR" "Listener.sh"`				
+#					echo $novedad "no es un archivo valido, mover archivo a RECHDIR. Nombre del archivo con formato invalido"	
 				done
 
 			IFS=$SAVEIFS
 		else
 			mensaje="No hay archivos en la carpeta arribos"
-			`$PWD/Logging.sh "Listener.sh" "$mensaje" "ERR"`				
-			echo "No hay archivos en la carpeta arribos"
+			`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "WAR"`				
+#			echo "No hay archivos en la carpeta arribos"
 		fi
 		
 # 7. Invocación MasterList
