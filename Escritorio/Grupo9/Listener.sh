@@ -34,11 +34,13 @@ loop=0
 #
 #----------------------------------------------------------------------------------------------------------------------
 
-if [ $INIT -eq 0 ]; then
-	echo "No Se Ejecuta Comando Listener, No Ha Sido Inicializado El Sistema"
-	return 1
+INICIALIZADO=$INIT
+
+if [ -z $INICIALIZADO ]; then
+	echo "La inicialización del ambiente no fue realizada al momento de ejecutar el comando Listener"
 else
-	pid_listener=`ps -e | grep -e 'Listener.sh$' | awk '{print $1}'`
+# 	pid_listener=$(ps -e | grep 'Listener.sh$' | awk '{ print $1 }')
+    pid_listener=`./GetPID.sh "Listener.sh"`
 	for ((  ; 1 == 1 ; )); do
 	
 # 1. Grabar en el Log el nro de ciclo.
@@ -48,11 +50,11 @@ else
 		`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "INFO"`
 
 # 2. Chequear si hay archivos en el directorio $NOVEDIR
-		cantidad_novedades=`ls "$NOVEDIR/" | wc -l`
+		cantidad_novedades=`ls "$NOVEDIR/" -F | grep -e "[^/]$" | wc -l`
 		if [ $cantidad_novedades -gt 0 ];then
 
 # Se obtienen los archivos del directorio $NOVEDIR para procesar por el comando Listener
-			novedades=`ls "$NOVEDIR/" -1`	
+			novedades=`ls "$NOVEDIR/" -1 -F | grep -e "[^/]$"`	
 			SAVEIFS=$IFS
 			IFS=$(echo -en "\n\b")
 
@@ -152,15 +154,17 @@ else
 # 7. Invocación MasterList
 
 # 7.a. Chequear si hay archivos en el directorio $PRECDIR - Lista de precios
-		cantidad_lista_precios=`ls "$PRECDIR/" | wc -l`			
+		cantidad_lista_precios=`ls "$MAEDIR/precios/" -1 -F | grep -e "[^/]$" | wc -l`			
 		if [ $cantidad_lista_precios -gt 0 ];then
 
 # 7.b. PID MasterList
-			pid_masterlist=`ps -e | grep -e 'MasterList.sh$' | awk '{print $1}'`
-			if [ -z $pid_masterlist ]; then
+#			pid_masterlist=`ps -e | grep -e 'MasterList.sh$' | awk '{print $1}'`
+			pid_masterlist=`./GetPID.sh "Masterlist.sh"`			
+			if [ -z "$pid_masterlist" ]; then
 #				echo "Ejecutar ./MasterList.sh"
-				`$BINDIR/Masterlist.sh`
-				pid_masterlist=`ps -e | grep -e 'Masterlist.sh$' | awk '{print $1}'`
+				`$BINDIR/Start.sh Masterlist.sh`
+#				pid_masterlist=`ps -e | grep -e 'Masterlist.sh$' | awk '{print $1}'`
+				pid_masterlist=`./GetPID.sh "Masterlist.sh"`				
 				mensaje="PID De MasterList Lanzado: $pid_masterlist"
 				`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "INFO"`
 			else
@@ -173,15 +177,18 @@ else
 # 8. Invocacion Rating
 
 # 8.a. Chequear si hay archivos en el directorio $ACEPDIR - Lista de Compras
-		cantidad_lista_compras=`ls "$ACEPDIR/" | wc -l`			
+		cantidad_lista_compras=`ls "$ACEPDIR/" -1 -F | grep -e "[^/]$" | wc -l`			
 		if [ $cantidad_lista_compras -gt 0 ];then
 
 # 7.b. PID MasterList
-			pid_rating=`ps -e | grep -e 'Rating.sh$' | awk '{print $1}'`
-			if [ -z $pid_rating ]; then
+#			pid_rating=`ps -e | grep -e 'Rating.sh$' | awk '{print $1}'`
+			pid_rating=`./GetPID.sh "Rating.sh"`			
+			if [ -z "$pid_rating" ]; then
 #				echo "Ejecutar ./Rating.sh"
+#				`$BINDIR/Start.sh Rating.sh $ACEPDIR $MAEDIR $INFODIR $RECHDIR`
 				`$BINDIR/Rating.sh $ACEPDIR $MAEDIR $INFODIR $RECHDIR`
-				pid_rating=`ps -e | grep -e 'Rating.sh$' | awk '{print $1}'`
+#				pid_rating=`ps -e | grep -e 'Rating.sh$' | awk '{print $1}'`
+				pid_rating=`./GetPID.sh "Rating.sh"`
 				mensaje="PID De Rating Lanzado: $pid_Rating"
 				`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "INFO"`
 			else
