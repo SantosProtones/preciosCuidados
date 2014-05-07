@@ -37,7 +37,7 @@ Ubic_Precio=`head -1 "$MAEDIR/precios/$ListaDePrecios" | cut -f5 -d';'`
 Email_Colab=`head -1 "$MAEDIR/precios/$ListaDePrecios" | cut -f6 -d';'`
 
 #Obtengo el Super_Id del Maestro de Supermercados
-Super_Id=`grep "^[^;]*;$Provincia;$Nombre_Super;.*" "$MAEDIR/super.mae" | sed "s-^\([^;]*\);.*-\1-"`
+Super_Id=`grep "^[^;]*;$Provincia;$Nombre_Super;.*" "$MAEDIR/super.mae" | cut -f1 -d';'`
 
 #Obtengo el registro que contiene el email del colaborador en el Maestro de Asociados y Colaboradores
 Registro_Email_Colab=`grep "^[^;]*;[^;]*;[^;]*;[^;]*;$Email_Colab" "$MAEDIR/asociados.mae"`
