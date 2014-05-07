@@ -28,7 +28,6 @@ FORMAT_BOLD_BLUE="\e[1m\e[34m"
 FORMAT_BOLD="\e[1m"
 FORMAT_DEFAULT="\e[0m"
 
-
 #Messages
 INFO_DIRNAME_CANNOT_BE_EMPTY="El nombre del directorio no puede ser vacío"
 INFO_SIZE_MUST_BE_NUMERIC="El tamaño debe ser numérico"
