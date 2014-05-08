@@ -170,49 +170,61 @@ else
 		fi
 		
 # 7. Invocación MasterList
-
+# 7. Obtengo los PID de Masterlist y Rating
+#		pid_masterlist=`./GetPID.sh "Masterlist.sh"`
+#		pid_rating=`./GetPID.sh "Rating.sh"`
+ 		pid_masterlist=`ps -e | grep -e 'Masterlist.sh$' | awk '{ print $1 }'`
+		pid_rating=`ps -e | grep -e 'Rating.sh$' | awk '{ print $1 }'`
+		
 # 7.a. Chequear si hay archivos en el directorio $PRECDIR - Lista de precios
 		cantidad_lista_precios=`ls "$MAEDIR/precios/" -1 -F | grep -e "[^/]$" | wc -l`			
 		if [ $cantidad_lista_precios -gt 0 ];then
 
-# 7.b. PID MasterList
-#			pid_masterlist=`ps -e | grep -e 'MasterList.sh$' | awk '{print $1}'`
-			pid_masterlist=`./GetPID.sh "Masterlist.sh"`			
-			if [ -z $pid_masterlist ]; then
-#				echo "Ejecutar ./MasterList.sh"
-				`$BINDIR/Masterlist.sh`
-#				pid_masterlist=`ps -e | grep -e 'Masterlist.sh$' | awk '{print $1}'`
-				pid_masterlist=`./GetPID.sh "Masterlist.sh"`				
-				mensaje="PID De MasterList Lanzado: $pid_masterlist"
-				`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "INFO"`
+# 7.b. Chequea que ningun proceso este en ejecución 
+			if [ -z $pid_masterlist ]; then 
+				if [ -z $pid_rating ]; then
+					`$BINDIR/Masterlist.sh&`
+#					pid_masterlist=`./GetPID.sh "Masterlist.sh"`
+					pid_masterlist=`ps -e | grep -e 'Masterlist.sh$' | awk '{ print $1 }'`
+					mensaje="PID De MasterList Lanzado: $pid_masterlist"
+					`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "INFO"`
+				else
+					mensaje="Masterlist.sh no se ejecutó. El proceso Rating.sh se esta ejecutando"										
+					`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "ERR"`
+				fi
 			else
 				mensaje="El proceso MasterList.sh ya está ejecutándose"
-				`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "WAR"`
+				`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "ERR"`
 			fi
 
 		fi
 
 # 8. Invocacion Rating
+# 8. Obtengo los PID de Masterlist y Rating				
+#		pid_masterlist=`./GetPID.sh "Masterlist.sh"`
+#		pid_rating=`./GetPID.sh "Rating.sh"`
+ 		pid_masterlist=`ps -e | grep -e 'Masterlist.sh$' | awk '{ print $1 }'`
+		pid_rating=`ps -e | grep -e 'Rating.sh$' | awk '{ print $1 }'`
 
 # 8.a. Chequear si hay archivos en el directorio $ACEPDIR - Lista de Compras
 		cantidad_lista_compras=`ls "$ACEPDIR/" -1 -F | grep -e "[^/]$" | wc -l`			
 		if [ $cantidad_lista_compras -gt 0 ];then
 
-# 7.b. PID MasterList
-#			pid_rating=`ps -e | grep -e 'Rating.sh$' | awk '{print $1}'`
-			pid_rating=`./GetPID.sh "Rating.sh"`			
-			if [ -z $pid_rating ]; then
-#				echo "Ejecutar ./Rating.sh"
-				`$BINDIR/Rating.sh`
-#				pid_rating=`ps -e | grep -e 'Rating.sh$' | awk '{print $1}'`
-				pid_rating=`./GetPID.sh "Rating.sh"`
-				mensaje="PID De Rating Lanzado: $pid_rating"
-				`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "INFO"`
+# 8.b. Chequea de que ningun proceso este en ejecución
+			if [ -z $pid_rating ];then 
+				if [ -z $pid_masterlist ]; then
+					`$BINDIR/Rating.sh&`
+ 					pid_rating=`ps -e | grep -e 'Rating.sh$' | awk '{ print $1 }'`
+					mensaje="PID De Rating Lanzado: $pid_rating"
+					`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "INFO"`
+				else
+					mensaje="Rating.sh no se ejecutó. El proceso Masterlist.sh se esta ejecutándo"
+					`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "ERR"`
+				fi
 			else
 				mensaje="El proceso Rating.sh ya está ejecutándose"
-				`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "WAR"`
-			fi
-
+				`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "ERR"`				
+			fi									
 		fi
 
 		sleep $T_SLEEP # duermo T_SLEEP segundos
