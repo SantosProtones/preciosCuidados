@@ -25,7 +25,7 @@ asociados="$MAEDIR/asociados.mae"
 #
 #----------------------------------------------------------------------------------------------------------------------
 
-T_SLEEP=30 # Tiempo de espera entre cada vuelta (en seg)
+T_SLEEP=10 # Tiempo de espera entre cada vuelta (en seg)
 loop=0 
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -160,9 +160,9 @@ else
 # 7.b. PID MasterList
 #			pid_masterlist=`ps -e | grep -e 'MasterList.sh$' | awk '{print $1}'`
 			pid_masterlist=`./GetPID.sh "Masterlist.sh"`			
-			if [ -z "$pid_masterlist" ]; then
+			if [ -z $pid_masterlist ]; then
 #				echo "Ejecutar ./MasterList.sh"
-				`$BINDIR/Start.sh Masterlist.sh`
+				`$BINDIR/Masterlist.sh&`
 #				pid_masterlist=`ps -e | grep -e 'Masterlist.sh$' | awk '{print $1}'`
 				pid_masterlist=`./GetPID.sh "Masterlist.sh"`				
 				mensaje="PID De MasterList Lanzado: $pid_masterlist"
@@ -183,13 +183,13 @@ else
 # 7.b. PID MasterList
 #			pid_rating=`ps -e | grep -e 'Rating.sh$' | awk '{print $1}'`
 			pid_rating=`./GetPID.sh "Rating.sh"`			
-			if [ -z "$pid_rating" ]; then
+			if [ -z $pid_rating ]; then
 #				echo "Ejecutar ./Rating.sh"
 #				`$BINDIR/Start.sh Rating.sh $ACEPDIR $MAEDIR $INFODIR $RECHDIR`
-				`$BINDIR/Rating.sh $ACEPDIR $MAEDIR $INFODIR $RECHDIR`
+				`$BINDIR/Rating.sh&`
 #				pid_rating=`ps -e | grep -e 'Rating.sh$' | awk '{print $1}'`
 				pid_rating=`./GetPID.sh "Rating.sh"`
-				mensaje="PID De Rating Lanzado: $pid_Rating"
+				mensaje="PID De Rating Lanzado: $pid_rating"
 				`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "INFO"`
 			else
 				mensaje="El proceso Rating.sh ya está ejecutándose"
