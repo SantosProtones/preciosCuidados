@@ -119,7 +119,6 @@ function log() {
 }
 
 function askUser() {
-	#TODO: CHECK PARAMETERSS
 	local RESP=""
 	while [ "$RESP" == "" ]
 	do
@@ -470,7 +469,6 @@ done
 echo ""
 
 PERLVER=`perl --version | grep \(v`
-#A BIT HARCODED BUT BASH INDEX OPERATOR SUCKS
 PERLVER=${PERLVER:43:1}
 
 if [ $PERLVER -lt $MINPERLVER ]
@@ -485,7 +483,6 @@ while [ "$CONFIRMINSTALL" == "false" ];
 do
 	unset DIRECTORYNAMESTAKEN
 	echo ""
-	#HAS TO BE DONE THIS WAY BECAUSE SHELL SCRIPTING SUCKS
 	if [ `isMissing "$BINDIR"` == "true" ]
 		then
 			askForDirectoryName "Defina el directorio de instalación de los ejecutables ($GRUPO/${FORMAT_BOLD_BLUE}$BINDIR${FORMAT_DEFAULT}): "
@@ -643,8 +640,7 @@ do
 done
 echo ""
 
-#UNCOMMENT FOR FINAL RELEASE
-#clear
+clear
 
 while [ true ];
 do
