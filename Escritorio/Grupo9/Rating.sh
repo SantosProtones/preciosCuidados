@@ -151,14 +151,14 @@ function ExisteUnidad () {
     return $EXISTE
 }
 
-# Funcion. presupuestarPedido
+# Funcion. PresupuestarPedido
 # Parametros. $1 (item-produto a comprar) $2 (archivo lista de precios) 
 # $3 (archivo donde se almacenan) $4 (unidad a comprar)
 # $5 (posicion de la unidad a comprar en equivalencias) 
 # Objetivo. Obtener los precios y nombres de productos que se corresponden  
 # con el producto indicado, almacenando los datos en $3
  
-function presupuestarPedido () {
+function PresupuestarPedido () {
     # Del registro tomo el producto y separo las palabras
     local VWORDS=(${1##*;})
         
@@ -166,7 +166,6 @@ function presupuestarPedido () {
     # solo los que contengan todas las palabras
     local GREP="| grep -n -w -i"
     local COMAND="cat $2"
-    local RTA=0
     for PALABRA in ${VWORDS[*]}
     do
         local ULTPOS=${VWORDS[${#VWORDS[@]} - 1]}
@@ -175,7 +174,7 @@ function presupuestarPedido () {
         fi
     done
     
-    local COMAND="$COMAND | sed -e \"s/^\([^;][^;]*\):\([0-9][0-9]*;\)\([^;][^;]*;\)\([^;][^;]*;\)\([^;][^;]*;\)\([^;][^;]*\)/\$1;\2\5\6/\""
+    COMAND="$COMAND | sed -e \"s/^\([^;][^;]*\):\([0-9][0-9]*;\)\([^;][^;]*;\)\([^;][^;]*;\)\([^;][^;]*;\)\([^;][^;]*\)/\$1;\2\5\6/\""
     
     # Chequeo que las unidades sean correctas y agrego los presupuestos
     local SAVE=$IFS
@@ -186,18 +185,20 @@ function presupuestarPedido () {
       FLAG=1
       IFS=';'
       local VFIELDS=($REG)
-      IFS=$'\x0A'$'\x0D'  
-      local UNID=${VFIELDS[3]##*" "}
-
-      if [ $4 == `echo $UNID | tr '[:upper:]' '[:lower:]'` ]; then
-        echo $REG >> $3
-      else
-        local POSUNID=`ExisteUnidad $UNID`
-        if [ $POSUNID -eq $5 ]; then
+      IFS=' '  
+      local VWORDSP=(${VFIELDS[3]})
+      if [ ${VWORDS[${#VWORDS[@]} - 2]} == ${VWORDSP[${#VWORDSP[@]} - 2]} ]; then
+          if [ $4 == `echo ${VWORDS[${#VWORDS[@]} - 1]} | tr '[:upper:]' '[:lower:]'` ]; then
             echo $REG >> $3
-        fi   
-      fi  
-
+          else
+            local POSUNID=`ExisteUnidad ${VWORDS[${#VWORDS[@]} - 1]}`
+            if [ $POSUNID -eq $5 ]; then
+                echo $REG >> $3
+            fi   
+          fi
+      fi
+      
+      IFS=$'\x0A'$'\x0D' 
     done
     IFS=$SAVE
 
@@ -292,7 +293,7 @@ else
 		            
 		            # Si no hay errores en el registro a procesar busco precio
 		            if [ $HAYERROR -ne 1 ]; then
-		                `presupuestarPedido "$REGPROD" "${MAEDIR}/$FLPMAE" "$INFOTEMP" $UNIDP $POSUNID`
+		                `PresupuestarPedido "$REGPROD" "${MAEDIR}/$FLPMAE" "$INFOTEMP" $UNIDP $POSUNID`
 		            else		                
 		                break
 		            fi
