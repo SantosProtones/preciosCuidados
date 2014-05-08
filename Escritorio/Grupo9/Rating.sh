@@ -23,10 +23,10 @@
 #       $RECHDIR=$4
 #
 # -----------------------Definicion de variables----------------------------
-ACEPDIR=$1
-MAEDIR=$2
-INFODIR=$3
-RECHDIR=$4
+#ACEPDIR=$1
+#MAEDIR=$2
+#INFODIR=$3
+#RECHDIR=$4
 
 # -----------------------Definicion de constantes---------------------------
 MLOGINI1="Inicio de Rating"
@@ -52,53 +52,53 @@ function ValidarParametros () {
     # Valido que los parametros esten informados
     if [ -z "$1" ]; then
         MENSERR="Parametro 1 no esta informado. Valor: $1"
-        $RTA=1 
+        RTA=1 
     fi
     
     if [ -z "$2" ]; then
         MENSERR="Parametro 2 no esta informado. Valor: $2"
-        $RTA=1 
+        RTA=1 
     fi
 
     if [ -z "$3" ]; then
         MENSERR="Parametro 3 no esta informado. Valor: $3"
-        $RTA=1 
+        RTA=1 
     fi
 
     if [ -z "$4" ]; then
         MENSERR="Parametro 4 no esta informado. Valor: $4"
-        $RTA=1 
+        RTA=1 
     fi
 
     # Valido que los directorios sean validos
     if ! [ -d $1 ]; then 
         MENSERR="Parametro 1 no es un directorio valido. Valor: $1"
-        $RTA=2 
+        RTA=2 
     fi
     
     if ! [ -d "$1/proc" ]; then 
         MENSERR="Directorio "$1/proc" inexistente"
-        $RTA=2 
+        RTA=2 
     fi
     
     if ! [ -d $2 ]; then 
         MENSERR="Parametro 2 no es un directorio valido. Valor: $2"
-        $RTA=2 
+        RTA=2 
     fi
     
     if ! [ -d $3 ]; then 
         MENSERR="Parametro 3 no es un directorio valido. Valor: $3"
-        $RTA=2 
+        RTA=2 
     fi
     
     if ! [ -d "$3/pres" ]; then 
         MENSERR="Directorio "$3/pres" inexistente"
-        $RTA=2 
+        RTA=2 
     fi
     
     if ! [ -d $4 ]; then 
         MENSERR="Parametro 4 no es un directorio valido. Valor: $4"
-        $RTA=2 
+        RTA=2 
     fi
     
     echo $MENSERR
@@ -112,7 +112,7 @@ function ValidarParametros () {
  
 function ContarArchivos () {
     local NUMACEP=0
-    NUMACEP=`ls $1*.* | wc -l`
+    NUMACEP=`ls "$1/" -1 -F | grep -e "[^/]$" | wc -l`
     echo $NUMACEP
 }
 
@@ -123,7 +123,7 @@ function ContarArchivos () {
 function ExisteArchivo () {
     # Tomo el nombre del archivo de la ruta actual
     local NUMARCH=`find $2 -name $1 | wc -l`
-    if [ $NUMARCH = 0 ]; then
+    if [ $NUMARCH -eq 0 ]; then
        return 1
     fi
     return 0
@@ -139,136 +139,71 @@ function ExisteUnidad () {
     local NUMREG=0
     local EXISTE=0
     # busco la unidad en el fichero de equivalencias
-    while read REG
-    do
-        NUMREG=`expr $NUMREG + 1`
-        local REGLOW=`echo $REG | tr [:upper:] [:lower:]`
-        IFS=';'
-        local VUNIDS=(`echo "$REGLOW;"`)
-        IFS=' '            
-        for VUNID in ${VUNIDS[*]}
-        do
-            local UNID=`echo $1 | tr [:upper:] [:lower:]`
-            if [ "$VUNID" = "$UNID" ]; then
-                EXISTE="$NUMREG"
-                break
-            fi
-        done
-        if [ $EXISTE != 0 ]; then
-            break
-        fi       
-    done < "$MAEDIR/um.tab"
-    echo $EXISTE
-}
-
-# Funcion. ValidarArchivoCompra
-# Parametros. $1 (ruta archivo) 
-# Objetivo. Verificar la validez del archivo lista de compra a presupuestar
- 
-function ValidarArchivoCompra () {     
-    if ! [ -s "$1" ]; then
-	    # Valido archivo vacio
-	    echo "$MERRVAC"
-	    return 1
-    fi
-    
-    # Verifico el formato de cada uno de los registros
-    while read LINEA
-    do
-	    local NUMTAG=`echo "$LINEA" | grep -c ";"`
-	    if [ $? = 0 ]; then
-	        # Valido lista de compra
-	        if [ $NUMTAG != 1 ]; then 
-	            echo "$MERRINV" 
-	            return 1	
-	        fi
-	
-	        # Checkeo que la unidad sea valida
-	        local UNID=${LINEA##*" "}
-	        local POSUNID=`ExisteUnidad $UNID`
-	        if [ $POSUNID = 0 ]; then
-	            echo "$MERRINV"
-	            return 1
-	        fi
-	    else
-	        echo "$MERRINV"
-	        return 1
-	    fi
-    done < "$1"
-    
-    echo ""
-    return 0
-}
-
-# Funcion. CompararProductos
-# Parametros. $1 (produto a comprar) $2 (producto en lista de precios) 
-# Objetivo. Verificar que ambos productos son iguales realizando una 
-# comparacion por palabra sin importar el orden (no case sensitive)
- 
-function CompararProductos () {
-    # Resguardo la cadena en ficheros auxiliares
-    echo $1 > "$PWD/FT1"
-    echo $2 > "$PWD/FT2"
-    
-    # Busco cada palabra en el registro de la lista de precios
-    local RTA=0
-    while read -d " " PALABRA
-    do
-        # Por cada palabra de producto 1 busco match
-        local MATCH=0
-        MATCH=`egrep -i -w -c $PALABRA "$PWD/FT2"`
-        if [ $MATCH = 0 ]; then
-            RTA=1
-            break
+    for REG in ${VREGUNIDS[*]}
+    do	
+	    NUMREG=`expr $NUMREG + 1`
+	    local COUNT=`echo $REG | grep -i -w -c "$1"`
+        if [ $COUNT -ne 0 ]; then
+	        EXISTE=$NUMREG
+	        break
         fi
-    done < "$PWD/FT1"
-    
-    `rm "$PWD/FT1"` 
-    `rm "$PWD/FT2"`
-
-    # Verifico las unidades
-    if [ $RTA = 0 ]; then
-        local UNID1=${1##*" "}
-        local UNID2=${2##*" "}
-	    if [ "$UNID1" != "$UNID2" ]; then
-	        # Debo buscar equivalencia de unidades	        
-	        local POSUNID1=`ExisteUnidad "$UNID1"`
-	        local POSUNID2=`ExisteUnidad "$UNID2"`
-	        if [ "$POSUNID1" != "$POSUNID2" ]; then
-		        RTA=1
-	        fi
-        fi 
-    fi
-    
-    return $RTA
+    done
+    return $EXISTE
 }
 
-# Funcion. ObtenerPrecios
+# Funcion. presupuestarPedido
 # Parametros. $1 (item-produto a comprar) $2 (archivo lista de precios) 
-# $3 (archivo donde se almacenan)
+# $3 (archivo donde se almacenan) $4 (unidad a comprar)
+# $5 (posicion de la unidad a comprar en equivalencias) 
 # Objetivo. Obtener los precios y nombres de productos que se corresponden  
 # con el producto indicado, almacenando los datos en $3
  
-function ObtenerPrecio () {
-    # Proceso cada uno de los productos del super
-    # buscando coincidencias con el producto a comprar
-    IFS=';'
-    local VCOM=(`echo "$1;"`)
-    IFS=' '
-    local IGUALDAD=0
+function presupuestarPedido () {
+    # Del registro tomo el producto y separo las palabras
+    local VWORDS=(${1##*;})
+        
+    # Creo el comando para filtrar los registros
+    # solo los que contengan todas las palabras
+    local GREP="| grep -n -w -i"
+    local COMAND="cat $2"
+    local RTA=0
+    for PALABRA in ${VWORDS[*]}
+    do
+        local ULTPOS=${VWORDS[${#VWORDS[@]} - 1]}
+        if [ $PALABRA != $ULTPOS ]; then
+            COMAND="$COMAND $GREP $PALABRA"
+        fi
+    done
+    
+    local COMAND="$COMAND | sed -e \"s/^\([^;][^;]*\):\([0-9][0-9]*;\)\([^;][^;]*;\)\([^;][^;]*;\)\([^;][^;]*;\)\([^;][^;]*\)/\$1;\2\5\6/\""
+    
+    # Chequeo que las unidades sean correctas y agrego los presupuestos
+    local SAVE=$IFS
+    IFS=$'\x0A'$'\x0D'
+    FLAG=0
+    for REG in $(eval $COMAND)
+    do
+      FLAG=1
+      IFS=';'
+      local VFIELDS=($REG)
+      IFS=$'\x0A'$'\x0D'  
+      local UNID=${VFIELDS[3]##*" "}
 
-    while read REGSUP
-    do 
-	    IFS=';'
-	    local VSUP=(`echo "$REGSUP;"`)
-	    IFS=' '
-	    `CompararProductos "${VCOM[1]}" "${VSUP[3]}"`
-	    if [ $? = 0 ]; then	
-	        echo "${VCOM[0]};${VCOM[1]};${VSUP[0]};${VSUP[3]};${VSUP[4]}" >> $3
-	        IGUALDAD=1
-	    fi
-    done < $2
-    return $IGUALDAD
+      if [ $4 == `echo $UNID | tr '[:upper:]' '[:lower:]'` ]; then
+        echo $REG >> $3
+      else
+        local POSUNID=`ExisteUnidad $UNID`
+        if [ $POSUNID -eq $5 ]; then
+            echo $REG >> $3
+        fi   
+      fi  
+
+    done
+    IFS=$SAVE
+
+    if [ $FLAG -eq 0 ]; then
+      echo $1 >> $3 
+    fi
 }
 
 #
@@ -278,8 +213,9 @@ function ObtenerPrecio () {
 #
 # Valida que los parametros esten informados y sean consistentes
 ERROR=`ValidarParametros "$ACEPDIR" "$MAEDIR" "$INFODIR" "$RECHDIR"`
-if [ $? != 0 ]; then
-    echo "$ERROR"
+if [ $? -ne 0 ]; then
+    `$PWD/Logging.sh "$COMANDO" "$ERROR" "ERR"`
+    `$PWD/Logging.sh "$COMANDO" "$MLOGFIN" "INFO"`
     exit 1
 fi
 
@@ -292,61 +228,87 @@ NUMACEP=`ContarArchivos "$ACEPDIR"`
 `$PWD/Logging.sh "$COMANDO" "$MLOGINI2 $NUMACEP" "INFO"`
 
 # Sino hay listas de compras por procesar termine
-if [ $NUMACEP = 0 ]; then
-    echo "No hay listas a presupuestar en $ACEPDIR"
+if [ $NUMACEP -eq 0 ]; then
+    ERRORLP="No hay listas a presupuestar en $ACEPDIR"
+    `$PWD/Logging.sh "$COMANDO" "$ERRORLP" "ERR"`
+    `$PWD/Logging.sh "$COMANDO" "$MLOGFIN" "INFO"`
     exit 2
 else	    
-    `ExisteArchivo "$FLPMAE" "$MAEDIR"`
+    `ExisteArchivo "$FLPMAE" "$MAEDIR/"`
         
     # Si no existe la lista maestra de precios finalizo
-    if [ $? != 0 ]; then
-	    echo "En $MAEDIR no existe lista de precios maestra $FLPMAE"
+    if [ $? -ne 0 ]; then
+	    ERRORLPRE="En $MAEDIR no existe lista de precios maestra $FLPMAE"
+	    `$PWD/Logging.sh "$COMANDO" "$ERRORLPRE" "ERR"`
+        `$PWD/Logging.sh "$COMANDO" "$MLOGFIN" "INFO"`
 	    exit 3
     fi
+    
+    # Creo un vector con los registros de unidades
+    for REG in `cat "$MAEDIR/um.tab"`
+    do	
+	    LOWREG=`echo $REG | tr [:upper:] [:lower:]`
+	    VREGUNIDS[${#VREGUNIDS[@]}]="$LOWREG;"
+	done
 
     # Recupero las listas de comparas a procesar
-    `ls "$ACEPDIR"*.* -1 > "$PWD/LISTTEMP"`
-    
-    while read ARCHIVO
+    LISTTEMP=($(ls "$ACEPDIR/"*.* -1))
+        
+    for ARCHIVO in ${LISTTEMP[*]}
     do
         # Logueo la lista a presupuestar
         `$PWD/Logging.sh "$COMANDO" "$MPROC $ARCHIVO" "INFO"`
         
         # Chequeo que no se haya procesado aun el archivo
-        `ExisteArchivo "${ARCHIVO##*/}" "${ACEPDIR}proc/"`
-        
-	    if [ $? = 0 ]; then
+        `ExisteArchivo "${ARCHIVO##*/}" "${ACEPDIR}/proc/"`
+	    
+	    if [ $? -eq 0 ]; then
             `$PWD/Logging.sh "$COMANDO" "$MERRDUP" "ERR"`
-            `$PWD/Mover.sh "$ARCHIVO" "$RECHDIR" "$COMANDO"`
-        else 
+            `$PWD/Mover.sh "$ARCHIVO" "$RECHDIR/" "$COMANDO"`
+        else	 
             # Valida que el archivo lista de compra sea valido
-            MENSERR=`ValidarArchivoCompra "$ARCHIVO"`
-            
-	        if ! [ -z "$MENSERR" ]; then
+	        if ! [ -s "$ARCHIVO" ]; then
 		        # Error de validacion se mueve archivo a rechazados
-		        `$PWD/Logging.sh "$COMANDO" "$MENSERR" "ERR"`
-                `$PWD/Mover.sh "$ARCHIVO" "$RECHDIR" "$COMANDO"`
+		        `$PWD/Logging.sh "$COMANDO" "$MERRVAC" "ERR"`
+                `$PWD/Mover.sh "$ARCHIVO" "$RECHDIR/" "$COMANDO"`
             else
-		        INFOTEMP="$PWD/${ARCHIVO##*/}"		
-		
+		        INFOTEMP="${INFODIR}/pres/${ARCHIVO##*/}"
+		        HAYERROR=0
 	            while read REGPROD
 		        do
-		            `ObtenerPrecio "$REGPROD" "${MAEDIR}$FLPMAE" "$INFOTEMP"`
-		            if [ $? != 1 ]; then
-                        # Si no encontro precio grabo el producto pedido
-		                echo "$REGPROD" >> "$INFOTEMP"
+		            # Verifica la validez del registro
+		            NUMTAGP=`echo "$REGPROD" | grep -c ";"`
+                    # Valida numero de delimitadores
+                    if [ $NUMTAGP -ne 1 ]; then 
+                        HAYERROR=1	
+                    else
+                        # Checkeo que la unidad sea valida
+                        UNIDP=${REGPROD##*" "}
+                        POSUNID=`ExisteUnidad $UNIDP`
+                        if [ $? -eq 0 ]; then
+                            HAYERROR=1
+                        fi
+                    fi
+		            
+		            # Si no hay errores en el registro a procesar busco precio
+		            if [ $HAYERROR -ne 1 ]; then
+		                `presupuestarPedido "$REGPROD" "${MAEDIR}/$FLPMAE" "$INFOTEMP" $UNIDP $POSUNID`
+		            else		                
+		                break
 		            fi
 		        done < $ARCHIVO
-
-		        # Procesado el archivo lo muevo a INFODIR
-		        `$PWD/Mover.sh "$INFOTEMP" "${INFODIR}pres/" "$COMANDO"` 	
-            fi
-            `$PWD/Mover.sh "$ARCHIVO" "${ACEPDIR}proc/" "$COMANDO"`
+                
+                if [ $HAYERROR -eq 0 ]; then
+		            # Procesado el archivo lo muevo a INFODIR
+		            `$PWD/Mover.sh "$ARCHIVO" "${ACEPDIR}/proc/" "$COMANDO"`
+		        else
+		            `rm "$INFOTEMP"`
+		            `$PWD/Logging.sh "$COMANDO" "$MERRINV" "ERR"`
+                    `$PWD/Mover.sh "$ARCHIVO" "$RECHDIR/" "$COMANDO"` 	
+		        fi
+            fi            
         fi
-    done < "$PWD/LISTTEMP"
-
-    # Elimino el archivo temporal creado 
-    `rm "$PWD/LISTTEMP"` 
+    done
 fi
 
 `$PWD/Logging.sh "$COMANDO" "$MLOGFIN" "INFO"`
