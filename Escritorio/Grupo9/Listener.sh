@@ -180,7 +180,7 @@ else
 			pid_masterlist=`./GetPID.sh "Masterlist.sh"`			
 			if [ -z $pid_masterlist ]; then
 #				echo "Ejecutar ./MasterList.sh"
-				`$BINDIR/Masterlist.sh&`
+				`$BINDIR/Masterlist.sh`
 #				pid_masterlist=`ps -e | grep -e 'Masterlist.sh$' | awk '{print $1}'`
 				pid_masterlist=`./GetPID.sh "Masterlist.sh"`				
 				mensaje="PID De MasterList Lanzado: $pid_masterlist"
@@ -203,7 +203,7 @@ else
 			pid_rating=`./GetPID.sh "Rating.sh"`			
 			if [ -z $pid_rating ]; then
 #				echo "Ejecutar ./Rating.sh"
-				`$BINDIR/Rating.sh&`
+				`$BINDIR/Rating.sh`
 #				pid_rating=`ps -e | grep -e 'Rating.sh$' | awk '{print $1}'`
 				pid_rating=`./GetPID.sh "Rating.sh"`
 				mensaje="PID De Rating Lanzado: $pid_rating"
