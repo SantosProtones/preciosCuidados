@@ -6,7 +6,7 @@
 
 #-----------------variables inicializadas minimas
 #$INFODIR="/home/flavio/Escritorio/TpSis/Grupo09/Informes";
-#$PRESDIR=$INFODIR."/pres";
+
 #$MAEDIR="/home/flavio/Escritorio/TpSis/Grupo09/Mestros";
 #-----------------
 
@@ -24,9 +24,9 @@ reportingMain();
 
 
 sub initialize{
-	if((defined $ENV{"INFODIR"}) and (defined $ENV{"PRESDIR"}) and (defined $ENV{"MAEDIR"})){
+	if((defined $ENV{"INFODIR"}) and (defined $ENV{"MAEDIR"})){
 		$INFODIR=$ENV{"INFODIR"};
-		$PRESDIR=$ENV{"PRESDIR"};
+		$PRESDIR=$INFODIR."/pres";
 		$MAEDIR=$ENV{"MAEDIR"};		
 		return 1;
 	}

@@ -1,0 +1,14 @@
+_Insertar el dispositivo de almacenamiento con el contenido del tp
+_Crear en el directorio corriente un directorio de trabajo, que denominaremos Grupo09 a partir de ahora
+_Copiar el archivo Instalacion.tgz a la carpeta Grupo09
+_Posicionarse por linea de comando en la carpeta Grupo09 y ejecutar "tar xvfz Instalacion.tgz" para desempaquetar y descomprimir el archivo.
+_Verificar que esten todos los scripts de los comandos, y dentro de la carpeta datos deben estar Super.mae,Asociados.mae y um.tab.
+_Posicionado en la carpeta Grupo09,ejecutar por linea de comando "./Installer.sh".
+_Terminada la instalacion default, los archivos ejecutables van a quedar en la carpeta bin, y los archivos maestros en mae
+_Posicionarse la carpeta de ejecutables, en el caso default bin, y ejecutar ". ./Initializer.sh"
+_Se puede elegir al correr el initializer si se dese arrancar el Listener o no.
+_Si se decide que no, el mismo se puede arrancar manualmente ejecutando "./Start.sh Listener.sh"
+_Con el listener corriendo se puede proceder a poner archivos de listas de compras y de precios en la carpeta arribos para ser procesados
+_Si se desea detener el Listener se ejecuta el comando "./Stop.sh Listener.sh"
+_Una vez corrido el listener y habiendo puesto archivos a procesar con la consecuente generacion de presupuestos de listas de compras, se puede proceder a ejecutar el Reporting ejecutando "perl Reporting.pl [opciones]". Ej: "perl Reporting.pl -a","perl Reporting.pl -rm"
+
