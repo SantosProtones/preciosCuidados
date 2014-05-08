@@ -37,6 +37,7 @@ MERRDUP="Se rechaza el archivo por estar DUPLICADO"
 MERRINV="Se rechaza el archivo por formato INVALIDO"
 MERRVAC="Se rechaza el archivo por estar vacio"
 FLPMAE="precios.mae"
+TABEQU="um.tab"
 COMANDO="Rating"
 
 # -----------------------Declaracion de Funciones---------------------------
@@ -239,18 +240,28 @@ else
         
     # Si no existe la lista maestra de precios finalizo
     if [ $? -ne 0 ]; then
-	    ERRORLPRE="En $MAEDIR no existe lista de precios maestra $FLPMAE"
-	    `$PWD/Logging.sh "$COMANDO" "$ERRORLPRE" "ERR"`
+	ERRORLPRE="En $MAEDIR no existe lista de precios maestra $FLPMAE"
+	`$PWD/Logging.sh "$COMANDO" "$ERRORLPRE" "ERR"`
         `$PWD/Logging.sh "$COMANDO" "$MLOGFIN" "INFO"`
-	    exit 3
+	exit 3
+    fi
+    
+    `ExisteArchivo "$TABEQU" "$MAEDIR/"`
+        
+    # Si no existe el archivo de equivalencias finalizo
+    if [ $? -ne 0 ]; then
+	ERRORLEQ="En $MAEDIR no existe el archivo de equivalencias $TABEQU"
+	`$PWD/Logging.sh "$COMANDO" "$ERRORLEQ" "ERR"`
+        `$PWD/Logging.sh "$COMANDO" "$MLOGFIN" "INFO"`
+	exit 4
     fi
     
     # Creo un vector con los registros de unidades
-    for REG in `cat "$MAEDIR/um.tab"`
+    for REG in `cat "$MAEDIR/$TABEQU"`
     do	
-	    LOWREG=`echo $REG | tr [:upper:] [:lower:]`
-	    VREGUNIDS[${#VREGUNIDS[@]}]="$LOWREG;"
-	done
+	LOWREG=`echo $REG | tr [:upper:] [:lower:]`
+        VREGUNIDS[${#VREGUNIDS[@]}]="$LOWREG;"
+    done
 
     # Recupero las listas de comparas a procesar
     LISTTEMP=($(ls "$ACEPDIR/"*.* -1))
