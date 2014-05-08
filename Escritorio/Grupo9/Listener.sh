@@ -45,8 +45,7 @@ else
 	
 # 1. Grabar en el Log el nro de ciclo.
 		loop=`expr $loop+1 | bc`
-		mensaje="PID Listener.sh: $pid_listener Ciclo $loop Hora: $(date +%T)"
-		echo $BINDIR 	
+		mensaje="PID Listener.sh: $pid_listener Ciclo $loop Hora: $(date +%T)" 	
 		`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "INFO"`
 
 # 2. Chequear si hay archivos en el directorio $NOVEDIR
@@ -84,6 +83,7 @@ else
 # 3.b.b Validación de la fecha
 						fecha_novedad=`echo $novedad | cut -d'-' -f2 | cut -d'.' -f1`
 						fecha_valida=`date -d $fecha_novedad +%Y%m%d 2> /dev/null`
+						fecha_actual=`date +%Y%m%d 2> /dev/null`
 				
 						if [ -z $fecha_valida ]; then	
 							fecha_valida='00000000'
@@ -91,11 +91,29 @@ else
 				
 						if [ $fecha_novedad -eq $fecha_valida ]; then
 							if [ $fecha_novedad -gt '20140101' ]; then
-								mensaje="Archivo $novedad aceptado. Es lista de Precios"
-								`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "INFO"`
-								`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$MAEDIR/precios" "Listener.sh"`	
-#								echo $novedad "es lista de precios, mover archivo a MAEDIR/precios"
-								continue
+								if [ $fecha_novedad -le $fecha_actual ]; then
+# 3.b.c Validación de usuario colaborador
+									asociado=`echo $novedad | cut -d'.' -f2`	
+									existe_asociado=`cat $asociados | grep -e "^[^;]*;[^;]*;$asociado;1;*[^;]*$" | wc -l`	
+									if [ $existe_asociado -gt 0 ]; then	
+										mensaje="Archivo $novedad aceptado. Es lista de Precios"
+										`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "INFO"`
+										`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$MAEDIR/precios" "Listener.sh"`	
+#										echo $novedad "es lista de precios, mover archivo a MAEDIR/precios"
+										continue
+									else
+										mensaje="Archivo $novedad rechazado. Usuario inexistente o no es colaborador"
+										`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "ERR"`
+										`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$RECHDIR" "Listener.sh"`
+										continue
+									fi
+								else
+									mensaje="Archivo $novedad rechazado. Fecha invalida"
+									`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "ERR"`
+									`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$RECHDIR" "Listener.sh"`
+									continue
+								fi				
+								
 							else									
 								mensaje="Archivo $novedad rechazado. Fecha invalida"
 								`$BINDIR/Logging.sh "Listener.sh" "$mensaje" "ERR"`
@@ -185,7 +203,6 @@ else
 			pid_rating=`./GetPID.sh "Rating.sh"`			
 			if [ -z $pid_rating ]; then
 #				echo "Ejecutar ./Rating.sh"
-#				`$BINDIR/Start.sh Rating.sh $ACEPDIR $MAEDIR $INFODIR $RECHDIR`
 				`$BINDIR/Rating.sh&`
 #				pid_rating=`ps -e | grep -e 'Rating.sh$' | awk '{print $1}'`
 				pid_rating=`./GetPID.sh "Rating.sh"`
