@@ -241,6 +241,18 @@ else
 					chmod +x "$BINDIR/Stop.sh"
 					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Stop.sh" INFO
 				fi
+				#----------------
+				
+				if [ ! -f  "$BINDIR/GetPID.sh" ]
+				then
+					ERRINST=1
+					. ./Logging.sh Initializer "No se encuentra GetPID" ERR
+				elif [ ! -x  "$BINDIR/GetPID.sh" ]
+				then
+					chmod +x "$BINDIR/GetPID.sh"
+					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre GetPID.sh" INFO
+				fi
+				
 
 		fi #Fin de cosas de bindir
 
@@ -358,7 +370,7 @@ else
 	if [ $ERRINST -eq 0 ] # si no hay errores en la instalacion
 	then
 		#exportacion de todas las variables si no fueron exportadas antes
-		if [ -z "$INIT"] || [ $INIT -eq 0 ]
+		if [ -z "$INIT" ] || [ $INIT -eq 0 ]
 		then
 			export BINDIR
 
@@ -396,7 +408,7 @@ else
 			if [ $Respuesta == 'S' ]
 			then
 				sigue=1
-				PID=`ps | grep 'Listener.sh$' | cut -f2 -d' '`
+				PID=`ps | grep 'Listener.sh$' | cut -f1 -d' '`
 				if [ -z $PID ]
 				then
 					./Start.sh Listener.sh
@@ -445,7 +457,7 @@ else
 		echo "Estado del sistema: INICIALIZADO"
 		echo ''
 	
-		PID=`ps | grep 'Listener.sh$' | cut -f2 -d' '`
+		PID=`ps | grep 'Listener.sh$' | cut -f1 -d' '`
 		if [ ! -z $PID ]
 		then 
 			echo "Demonio corriendo bajo el PID: $PID"
