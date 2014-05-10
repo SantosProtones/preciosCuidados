@@ -289,17 +289,6 @@ else
 					. ./Logging.sh Initializer "Se otorgaron permisos de lectura sobre super.mae"  INFO
 				fi
 				#--------------------------------------------
-				if [ ! -f "$MAEDIR/precios.mae" ]
-				then 
-					#ERRINST=1
-					. ./Logging.sh Initializer "No se encontró maestro de precios en el directorio $MAEDIR" INFO
-				elif [ ! -r "$MAEDIR/precios.mae" ]
-				then
-					chmod +r "$MAEDIR/precios.mae"
-					. ./Logging.sh Initializer "Se otorgaron permisos de lectura sobre precios.mae"  INFO
-				fi
-				#---------------------------------------------
-
 				if [ ! -f "$MAEDIR/um.tab" ]
 				then
 					ERRINST=1
