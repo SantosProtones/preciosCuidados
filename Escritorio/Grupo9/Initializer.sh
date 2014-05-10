@@ -408,11 +408,13 @@ else
 			if [ $Respuesta == 'S' ]
 			then
 				sigue=1
-				PID=`ps | grep 'Listener.sh$' | cut -f1 -d' '`
-				if [ -z $PID ]
+				#PID=`ps -o "pid,args" | grep 'Listener.sh$' | cut -f1 -d' '`
+				PID=`ps -o "pid,args" | grep -m 1 'Listener.sh$' | sed "s/[^0-9]*\([0-9][0-9]*\).*/\1/"`
+				
+				if [ -z "$PID" ]
 				then
 					./Start.sh Listener.sh
-					echo "Demonio iniciado. Puede detenerlo manualmente escribiendo \"Stop Listener.sh \" y presionando Enter"
+					echo "Demonio iniciado. Puede detenerlo manualmente escribiendo \"./Stop.sh Listener.sh \" y presionando Enter"
 				else 
 					yaEstaba="Listener ya estaba iniciado. PID: $PID"
 					echo $yaEstaba
@@ -424,7 +426,7 @@ else
 			elif [ $Respuesta == 'N' ] 
 			then
 				sigue=1
-				echo "No se arrancará Listener. Para ejecutarlo manualmente escriba \"Start Listener.sh\" y presione Enter"
+				echo "No se arrancará Listener. Para ejecutarlo manualmente escriba \"./Start.sh Listener.sh\" y presione Enter"
 		
 			else
 			echo "Respuesta inválida"
@@ -457,8 +459,9 @@ else
 		echo "Estado del sistema: INICIALIZADO"
 		echo ''
 	
-		PID=`ps | grep 'Listener.sh$' | cut -f1 -d' '`
-		if [ ! -z $PID ]
+		#	PID=`ps -o "pid,args" | grep 'Listener.sh$' | cut -f1 -d' '`
+		PID=`ps -o "pid,args" | grep -m 1 'Listener.sh$' | sed "s/[^0-9]*\([0-9][0-9]*\).*/\1/"`
+		if [ -n "$PID" ]
 		then 
 			echo "Demonio corriendo bajo el PID: $PID"
 		fi
