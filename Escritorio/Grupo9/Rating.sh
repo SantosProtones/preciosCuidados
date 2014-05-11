@@ -184,9 +184,9 @@ function PresupuestarPedido () {
     for REG in $(eval $COMAND)
     do
       FLAG=1
-      IFS=';'
+      IFS=$';'
       local VFIELDS=($REG)
-      IFS=' '  
+      IFS=$' '  
       local VWORDSP=(${VFIELDS[3]})
       if [ ${VWORDS[${#VWORDS[@]} - 2]} == ${VWORDSP[${#VWORDSP[@]} - 2]} ]; then
           if [ $4 == `echo ${VWORDS[${#VWORDS[@]} - 1]} | tr '[:upper:]' '[:lower:]'` ]; then
@@ -286,8 +286,11 @@ else
             else
 		        INFOTEMP="${INFODIR}/pres/${ARCHIVO##*/}"
 		        HAYERROR=0
-	            while read REGPROD
+	            SAVEIFS=$IFS
+	            IFS=$'\n'
+	            for REGPROD in `< $ARCHIVO`
 		        do
+		            IFS=$SAVEIFS
 		            # Verifica la validez del registro
 		            NUMTAGP=`echo "$REGPROD" | grep -c ";"`
                     # Valida numero de delimitadores
@@ -308,7 +311,8 @@ else
 		            else		                
 		                break
 		            fi
-		        done < $ARCHIVO
+		        done
+		        IFS=$SAVEIFS
                 
                 if [ $HAYERROR -eq 0 ]; then
 		            # Procesado el archivo lo muevo a INFODIR
