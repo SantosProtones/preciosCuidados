@@ -1,59 +1,113 @@
-#Variables initialization. Default values.
+# TODO list:
+#	- Optimize installed/missing components check.
+#	- Optimize missing components promt to user.
+#	- Complete moving all messages to variables.
+#	- Complete documentation.
+
+#System variables.
 GRUPO="$(dirname "$(readlink -f "$0")")"
+
 CONFDIR=conf
+
 DATADIR=datos
+
 BINDIR=bin
+
 MAEDIR=mae
+
 NOVEDIR=arribos
+
 DATASIZE=100
+
 ACEPDIR=aceptadas
+
 INFODIR=informes
+
 RECHDIR=rechazado
+
 LOGDIR=log
+
 LOGEXT=log
-MINLOGSIZEINKB=15
-MAXLOGSIZEINKB=20
-export LOGSIZE=$MAXLOGSIZEINKB
-PERLVER=""
-MINPERLVER=5
-DIRNAME=""
-SIZE=""
-FREESPACE=`df -m "$GRUPO" | tail -1 | awk '{print $4}'`
-LOGBIN=./Logging.sh
-MOVEBIN=./Mover.sh
-CONFIRMINSTALL="false"
-FORMAT_BOLD_RED="\e[1m\e[31m"
-FORMAT_BOLD_GREEN="\e[1m\e[32m"
-FORMAT_BOLD_BLUE="\e[1m\e[34m"
-FORMAT_BOLD="\e[1m"
-FORMAT_DEFAULT="\e[0m"
+
+export LOGSIZE=15
+
+#Other variables
+minLogSizeInKb=15
+
+maxLogSizeInKb=20
+
+freeSpace=`df -m "$GRUPO" | tail -1 | awk '{print $4}'`
+
+requiredDirs=("conf" "datos")
+
+requiredScripts=("GetPID.sh" "Initializer.sh" "Listener.sh" "Logging.sh" "Masterlist.sh" "Mover.sh" "Rating.sh" "Reporting.pl" "Start.sh" "Stop.sh")
+
+requiredDataFiles=("asociados.mae" "super.mae" "um.tab")
+
+perlVersion=""
+
+minPerlVersionAllowed=5
+
+confirmInstall=false
+
+#Global function variables
+resp=""
+
+dirName=""
+
+size=""
+
+prevInstallationExists=false
+
+logBin="./Logging.sh"
+
+moveBin="./Mover.sh"
+
+installerLogFile="$GRUPO/$CONFDIR/Installer"
+
+installerConfigFile="$GRUPO/$CONFDIR/Installer.conf"
+
+installedComponents=
+
+missingComponents=
+
+directoryNamesTaken=
+
+#Text format variables
+boldRed="\e[1m\e[31m"
+boldGreen="\e[1m\e[32m"
+boldBlue="\e[1m\e[34m"
+bold="\e[1m"
+default="\e[0m"
 
 #Messages
-INFO_DIRNAME_CANNOT_BE_EMPTY="El nombre del directorio no puede ser vacío"
+LABEL_INSTALLATION_LOG="Log de la instalación:"
+LABEL_DEFAULT_CONFIG_DIR="Directorio predefinido de Configuración:"
+INFO_dirName_CANNOT_BE_EMPTY="El nombre del directorio no puede ser vacío"
 INFO_SIZE_MUST_BE_NUMERIC="El tamaño debe ser numérico"
-INFO_INSTALLER_EXECUTION_STARTED="Inicio de Ejecución de Installer"
-INFO_COPYRIGHT="TP SO7508 ${FORMAT_BOLD}Primer Cuatrimestre 2014${FORMAT_DEFAULT}. Tema ${FORMAT_BOLD}C${FORMAT_DEFAULT} Copyright © Grupo 09\n"
-TITLE_MISSING_COMPONENTS="Componentes faltantes:"
-INFO_INSTALLATION_STATUS_READY="Estado de la instalación: ${FORMAT_BOLD_BLUE}LISTA${FORMAT_DEFAULT}\n"
-INFO_INSTALLATION_STATUS_INCOMPLETE="Estado de la instalación: ${FORMAT_BOLD_RED}INCOMPLETA${FORMAT_DEFAULT}\n"
-INFO_INSTALLATION_STATUS_COMPLETE="Estado de la instalación: ${FORMAT_BOLD_GREEN}COMPLETA${FORMAT_DEFAULT}\n"
+INFO_INSTALLER_EXECUTION_STARTED="${bold} ============ Inicio de Ejecución de Installer ============ ${default}"
+INFO_COPYRIGHT="TP SO7508 ${bold}Primer Cuatrimestre 2014${default}. Tema ${bold}C${default} Copyright © Grupo 09"
+TITLE_MISSING_COMPONENTS="${boldRed}Componentes faltantes${default}:"
+INFO_INSTALLATION_STATUS_READY="Estado de la instalación: ${boldBlue}LISTA${default}"
+INFO_INSTALLATION_STATUS_INCOMPLETE="Estado de la instalación: ${boldRed}INCOMPLETA${default}"
+INFO_INSTALLATION_STATUS_COMPLETE="Estado de la instalación: ${boldGreen}COMPLETA${default}"
 INFO_INSTALLATION_CANCELED="Proceso de Instalación Cancelado"
-QUESTION_COMPLETE_INSTALLATION="Desea completar la instalación? (${FORMAT_BOLD}Si${FORMAT_DEFAULT} - ${FORMAT_BOLD}No${FORMAT_DEFAULT}): "
+QUESTION_COMPLETE_INSTALLATION="Desea completar la instalación? (${bold}Si${default} - ${bold}No${default}): "
 INFO_INSTALLATION_CANCELED_BY_USER="Proceso de Instalación Cancelado por el usuario"
-INFO_ANSWER_MUST_BE_YES_OR_NO="Por favor responda ${FORMAT_BOLD}Si${FORMAT_DEFAULT} o ${FORMAT_BOLD}No${FORMAT_DEFAULT}."
-INFO_TERMS_AND_CONDITIONS="Al  instalar  TP  SO7508  ${FORMAT_BOLD}Primer  Cuatrimestre  2014${FORMAT_DEFAULT} UD.  expresa  aceptar  los términos  y  condiciones  del  \"ACUERDO  DE  LICENCIA  DE  SOFTWARE\"  incluido  en este paquete.\n"
-QUESTION_ACCEPT_TERMS_AND_CONDITIONS="Acepta? (${FORMAT_BOLD}Si${FORMAT_DEFAULT} - ${FORMAT_BOLD}No${FORMAT_DEFAULT}): "
+INFO_ANSWER_MUST_BE_YES_OR_NO="Por favor responda ${bold}Si${default} o ${bold}No${default}."
+INFO_TERMS_AND_CONDITIONS="Al  instalar  TP  SO7508  ${bold}Primer  Cuatrimestre  2014${default} UD.  expresa  aceptar  los términos  y  condiciones  del  \"ACUERDO  DE  LICENCIA  DE  SOFTWARE\"  incluido  en este paquete."
+QUESTION_ACCEPT_TERMS_AND_CONDITIONS="Acepta? (${bold}Si${default} - ${bold}No${default}): "
 INFO_TERMS_AND_CONDS_NOT_ACCEPTED="El usuario no aceptó los términos y condiciones. Instalación cancelada"
 INFO_PERL_VERSION="Perl version:\n`perl -v`"
-QUESTION_CONFIRM_INSTALLATION="Confirma Instalación? (${FORMAT_BOLD}Si${FORMAT_DEFAULT} - ${FORMAT_BOLD}No${FORMAT_DEFAULT}): "
-QUESTION_START_INSTALLATION="Iniciando Instalación. Esta Ud. seguro? (${FORMAT_BOLD}Si${FORMAT_DEFAULT} -  ${FORMAT_BOLD}No${FORMAT_DEFAULT}): "
-TITLE_CREATING_DIRECTORY_STRUCTURE="Creando Estructuras de directorio. . . .\n"
-TITLE_INSTALLING_MASTER_FILES_AND_TABLES="Instalando Archivos Maestros y Tablas\n"
-TITLE_INSTALLING_PROGRAMS_AND_FUNCTIONS="Instalando Programas y Funciones\n"
-TITLE_UPDATING_SYSTEM_CONFIG="Actualizando la configuración del sistema\n"
-INFO_INSTALLATION_COMPLETE="Instalación ${FORMAT_BOLD_GREEN}CONCLUIDA${FORMAT_DEFAULT}"
-ERROR_REQUIRED_COMPONENTS_NOT_FOUND="Algunos de los componentes requeridos para la instalación no pudieron ser encontrados. Descomprimir nuevamente el archivo tar puede solucionar el problema"
-ERROR_INCORRECT_PERL_VERSION="$INFO_COPYRIGHT\nPara instalar el TP es necesario contar con Perl $MINPERLVER o superior. Efectúe su instalación e inténtelo nuevamente.\n\n$INFO_INSTALLATION_CANCELED"
+QUESTION_CONFIRM_INSTALLATION="Confirma Instalación? (${bold}Si${default} - ${bold}No${default}): "
+QUESTION_START_INSTALLATION="Iniciando Instalación. Esta Ud. seguro? (${bold}Si${default} -  ${bold}No${default}): "
+TITLE_CREATING_DIRECTORY_STRUCTURE="Creando Estructuras de directorio. . . ."
+TITLE_INSTALLING_MASTER_FILES_AND_TABLES="Instalando Archivos Maestros y Tablas"
+TITLE_INSTALLING_PROGRAMS_AND_FUNCTIONS="Instalando Programas y Funciones"
+TITLE_UPDATING_SYSTEM_CONFIG="Actualizando la configuración del sistema"
+INFO_INSTALLATION_COMPLETE="Instalación ${boldGreen}CONCLUIDA${default}"
+ERROR_REQUIRED_COMPONENTS_NOT_FOUND="${boldRed}Algunos de los componentes requeridos para la instalación no pudieron ser encontrados. Descomprimir nuevamente el archivo tar puede solucionar el problema${default}"
+ERROR_INCORRECT_PERL_VERSION="$INFO_COPYRIGHT\n\nPara instalar el TP es necesario contar con Perl ${bold}$minPerlVersionAllowed o superior${default}. Efectúe su instalación e inténtelo nuevamente.\n\n$INFO_INSTALLATION_CANCELED"
 
 #Exit codes
 SUCCESS=0
@@ -68,704 +122,872 @@ function timeStamp() {
 }
 
 function isInstalled() {
-	local FOUND="false"
-	for i in "${INSTALLED[@]}"
+	local found=false
+	local searchFor="$1"
+
+	for component in "${installedComponents[@]}"
 	do
-		if [ "$i" == "$1" ]
+		if [ "$component" == "$searchFor" ]
 			then
-				FOUND="true"
+				found=true
 				break
 		fi
 	done
-	echo $FOUND
+	echo $found
 }
 
 function isMissing() {
-	local FOUND="false"
-	for i in "${MISSING[@]}"
+	local found=false
+	local searchFor="$1"
+
+	for component in "${missingComponents[@]}"
 	do
-		if [ "$i" == "$1" ]
+		if [ "$component" == "$searchFor" ]
 			then
-				FOUND="true"
+				found=true
 				break
 		fi
 	done
-	echo $FOUND
+	echo $found
 }
 
 function replaceInMissing() {
-	local INDEX=0
-	for i in "${MISSING[@]}"
+	local index=0
+	local searchFor="$1"
+	local replaceFor="$2"
+
+	for component in "${missingComponents[@]}"
 	do
-		if [ "$i" == "$1" ]
+		if [ "$component" == "$searchFor" ]
 			then
-				MISSING[$INDEX]="$2"
+				missingComponents[$index]="$replaceFor"
 				break
 			else
-				INDEX=$(($INDEX + 1))
+				index=$(($index + 1))
 		fi
 	done
 }
 
 function log() {
-	#$1 The message
-	#$2 The file to append to.
-	#$3 Log type
-	"$LOGBIN" "$2" "$1" "$3"
-	if [ "$4" == "doEcho" ]
+	local message="$1"
+	local logType="$2"
+
+	"$logBin" "$installerLogFile" "$message" "$logType"
+	if [ "$3" == "doEcho" ]
 		then
-			echo -e $1
+			echo -e $message
+			echo ""
 	fi
 }
 
 function askUser() {
-	local RESP=""
-	while [ "$RESP" == "" ]
-	do
-		#$1 is the question to the user
-		read -p "`echo -e -n "$1"`" RESP
-	done
-	echo $RESP
+	local message="$1"
+
+	read -p "`echo -e -n "$message"`" resp
 }
 
 function isDirectoryNameTaken() {
-	local FOUND="false"
+	local found=false
+	local dirName="$1"
 
-	if [ -d "$GRUPO/$1" ]
+	if [ -d "$GRUPO/$dirName" ]
 		then
-			FOUND="true"
+			found=true
 		else
-			for i in "${DIRECTORYNAMESTAKEN[@]}"
+			for component in "${directoryNamesTaken[@]}"
 			do
-				if [ "$i" == "$1" ]
+				if [ "$component" == "$dirName" ]
 					then
-						FOUND="true"
+						found=true
 						break
 				fi
 			done
 	fi
-	echo $FOUND
+	echo $found
 }
 
 function askForDirectoryName() {
-	DIRNAME=""
+	local message="$1"
+	local defaultDirName="$2"
+
+	dirName=""
 	while [ true ];
 	do
-		echo -e -n "$1"
-		read DIRNAME
-		case $DIRNAME in
-			"$CONFDIR" | "$DATADIR" )	echo -e "${FORMAT_BOLD_BLUE}$DIRNAME${FORMAT_DEFAULT} es un nombre de directorio reservado. Por favor elija otro nombre";;
-			"" )								echo "$INFO_DIRNAME_CANNOT_BE_EMPTY";;
-			* )								if [ `isDirectoryNameTaken "$DIRNAME"` == "true" ]
-												then
-													echo -e "El nombre ${FORMAT_BOLD_BLUE}$DIRNAME${FORMAT_DEFAULT} ya fue seleccionado para otro directorio. Por favor elija otro nombre";
-												else
-													break
-											fi;;
+		read -p "`echo -e -n "$message"`" dirName
+		case $dirName in
+			"$CONFDIR" | "$DATADIR" )
+				echo -e "${boldBlue}$dirName${default} es un nombre de directorio reservado. Por favor elija otro nombre";;
+			* )
+				if [ "$dirName" == "" ]
+					then
+						dirName="$defaultDirName"
+				fi
+				if [ `isDirectoryNameTaken "$dirName"` == true ]
+					then
+						echo -e "El nombre ${boldBlue}$dirName${default} ya fue seleccionado para otro directorio. Por favor elija otro nombre";
+					else
+						break
+				fi;;
 		esac
 	done
 }
 
 function askForSize() {
-	SIZE=""
+	local message="$1"
+	local defaultSize=$2
+
+	size=""
 	while [ true ];
 	do
-		echo -e -n "$1"
-		read SIZE
-		if [ "$(echo $SIZE | grep "^[ [:digit:] ]*$")" ] 
-			then 
+		read -p "`echo -e -n "$message"`" size
+		if [ "$size" == "" ]
+			then
+				size=$defaultSize
 				break
 			else
-				echo "$INFO_SIZE_MUST_BE_NUMERIC"
+				if [ "$(echo $size | grep "^[ [:digit:] ]*$")" ] 
+					then 
+						break
+					else
+						echo "$INFO_SIZE_MUST_BE_NUMERIC"
+				fi
+		fi			
+	done
+}
+
+function printFilesInDir() {
+	local dirName="$1"
+
+	for file in "$dirName"/*
+	do
+		if [ -f "$file" ]
+			then
+				echo "\n\t${file##*/}"
 		fi
 	done
 }
 
-if [ ! -d "$GRUPO/$CONFDIR" -o ! -d "$GRUPO/$DATADIR" ];
-	then
-		echo "$ERROR_REQUIRED_COMPONENTS_NOT_FOUND"
-		exit $ERROR_CODE_REQUIRED_COMPONENTS_NOT_FOUND
-fi
+function readConf() {
+	local propertyName=""
 
-if [ -f "$GRUPO/$CONFDIR/installer.conf" ];
-	then
-		#PACKAGE INSTALLED:
-		if [ "`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'BINDIR' | cut -f2 -d'='`" != "" ]
-			then
-				BINDIR=`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'BINDIR' | cut -f2 -d'='`
-		fi
-		if [ "`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'MAEDIR' | cut -f2 -d'='`" != "" ]
-			then
-				MAEDIR=`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'MAEDIR' | cut -f2 -d'='`
-		fi
-		if [ "`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'NOVEDIR' | cut -f2 -d'='`" != "" ]
-			then
-				NOVEDIR=`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'NOVEDIR' | cut -f2 -d'='`
-		fi
-		if [ "`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'DATASIZE' | cut -f2 -d'='`" != "" ]
-			then
-				DATASIZE=`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'DATASIZE' | cut -f2 -d'='`
-		fi
-		if [ "`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'ACEPDIR' | cut -f2 -d'='`" != "" ]
-			then
-				ACEPDIR=`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'ACEPDIR' | cut -f2 -d'='`
-		fi
-		if [ "`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'INFODIR' | cut -f2 -d'='`" != "" ]
-			then
-				INFODIR=`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'INFODIR' | cut -f2 -d'='`
-		fi
-		if [ "`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'RECHDIR' | cut -f2 -d'='`" != "" ]
-			then
-				RECHDIR=`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'RECHDIR' | cut -f2 -d'='`
-		fi
-		if [ "`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'LOGDIR' | cut -f2 -d'='`" != "" ]
-			then
-				LOGDIR=`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'LOGDIR' | cut -f2 -d'='`
-		fi
-		if [ "`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'LOGEXT' | cut -f2 -d'='`" != "" ]
-			then
-				LOGEXT=`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'LOGEXT' | cut -f2 -d'='`
-		fi
-		if [ "`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'LOGSIZE' | cut -f2 -d'='`" != "" ]
-			then
-				LOGSIZE=`cat "$GRUPO/$CONFDIR/installer.conf" | fgrep 'LOGSIZE' | cut -f2 -d'='`
-		fi
-		LOGBIN="$GRUPO/$BINDIR/Logging.sh"
-		MOVEBIN="$GRUPO/$BINDIR/Mover.sh"
-fi
+	exec 3< "$installerConfigFile"
+	while read line
+	do
+		propertyName=`echo $line | cut -f2 -d"="`
 
-if [ ! -f "$LOGBIN" ]
-	then
-		LOGBIN="$GRUPO/Logging.sh"
-		if [ ! -f "$LOGBIN" ]
+		case "$propertyName" in
+			"BINDIR")
+				BINDIR="$propertyName";;
+			"MAEDIR")
+				MAEDIR="$propertyName";;
+			"NOVEDIR")
+				NOVEDIR="$propertyName";;
+			"DATASIZE")
+				DATASIZE="$propertyName";;
+			"ACEPDIR")
+				ACEPDIR="$propertyName";;
+			"INFODIR")
+				INFODIR="$propertyName";;
+			"RECHDIR")
+				RECHDIR="$propertyName";;
+			"LOGDIR")
+				LOGDIR="$propertyName";;
+			"LOGEXT")
+				LOGEXT="$propertyName";;
+			"LOGSIZE")
+				LOGSIZE="$propertyName";;
+		esac
+	done <&3
+
+#	echo `cat "$installerConfigFile" | fgrep "$propertyName" | cut -f2 -d"="`
+
+	exec 3<&-
+}
+
+function initialize() {
+	local value=""
+
+	#Checking for required dirs.
+	for requiredDir in "${requiredDirs[@]}"
+	do
+		if [ ! -d "$requiredDir" ]
 			then
-				echo "$ERROR_REQUIRED_COMPONENTS_NOT_FOUND"
+				echo -e "$ERROR_REQUIRED_COMPONENTS_NOT_FOUND"
 				exit $ERROR_CODE_REQUIRED_COMPONENTS_NOT_FOUND
 		fi
-fi
-if [ ! -f "$MOVEBIN" ]
-	then
-		MOVEBIN="$GRUPO/Mover.sh"
-		if [ ! -f "$MOVEBIN" ]
+	done
+
+	#Checking if there is a previous installation of the system. 
+	if [ -f "$installerConfigFile" ];
+		then
+			prevInstallationExists=true
+
+			readConf
+	fi
+
+	#Checking for required scripts
+	for requiredScript in "${requiredScripts[@]}"
+	do
+		if ! [[ -f "$requiredScript" || -f "$BINDIR/$requiredScript" ]]
 			then
-				echo "$ERROR_REQUIRED_COMPONENTS_NOT_FOUND"
+				echo -e "$ERROR_REQUIRED_COMPONENTS_NOT_FOUND"
 				exit $ERROR_CODE_REQUIRED_COMPONENTS_NOT_FOUND
 		fi
-fi
+	done
 
-
-log "$INFO_INSTALLER_EXECUTION_STARTED" "$GRUPO/$CONFDIR/installer" "INFO"
-
-log "\nLog de la instalación: ${FORMAT_BOLD_GREEN}$GRUPO/$CONFDIR/Installer.log${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-
-log "Directorio predefinido de Configuración: ${FORMAT_BOLD_GREEN}$GRUPO/$CONFDIR${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-
-if [ ! -d "$GRUPO/$BINDIR" ];
-	then
-		MISSING=("${MISSING[@]}" "$BINDIR")
-	else
-		INSTALLED=("${INSTALLED[@]}" "$BINDIR")
-fi
-
-if [ ! -d "$GRUPO/$MAEDIR" ];
-	then
-		MISSING=("${MISSING[@]}" "$MAEDIR")
-	else
-		INSTALLED=("${INSTALLED[@]}" "$MAEDIR")
-		if [ ! -d "$GRUPO/$MAEDIR/precios" ]
+	#Checking for required data files
+	for requiredDataFile in "${requiredDataFiles[@]}"
+	do
+		if ! [[ -f "datos/$requiredDataFile" || -f "$MAEDIR/$requiredDataFile" ]]
 			then
-				MISSING=("${MISSING[@]}" "$MAEDIR/precios")
+				echo -e "$ERROR_REQUIRED_COMPONENTS_NOT_FOUND"
+				exit $ERROR_CODE_REQUIRED_COMPONENTS_NOT_FOUND
 		fi
-		if [ ! -d "$GRUPO/$MAEDIR/precios/proc" ]
-			then
-				MISSING=("${MISSING[@]}" "$MAEDIR/precios/proc")
-		fi
-fi
+	done
 
-if [ ! -d "$GRUPO/$NOVEDIR" ];
-	then
-		MISSING=("${MISSING[@]}" "$NOVEDIR")
-	else
-		INSTALLED=("${INSTALLED[@]}" "$NOVEDIR")
-fi
-
-if [ ! -d "$GRUPO/$ACEPDIR" ];
-	then
-		MISSING=("${MISSING[@]}" "$ACEPDIR")
-	else
-		INSTALLED=("${INSTALLED[@]}" "$ACEPDIR")
-		if [ ! -d "$GRUPO/$ACEPDIR/proc" ]
-			then
-				MISSING=("${MISSING[@]}" "$ACEPDIR/proc")
-		fi
-fi
-
-if [ ! -d "$GRUPO/$INFODIR" ];
-	then
-		MISSING=("${MISSING[@]}" "$INFODIR")
-	else
-		INSTALLED=("${INSTALLED[@]}" "$INFODIR")
-		if [ ! -d "$GRUPO/$INFODIR/pres" ]
-			then
-				MISSING=("${MISSING[@]}" "$INFODIR/pres")
-		fi
-fi
-
-if [ ! -d "$GRUPO/$RECHDIR" ];
-	then
-		MISSING=("${MISSING[@]}" "$RECHDIR")
-	else
-		INSTALLED=("${INSTALLED[@]}" "$RECHDIR")
-fi
-
-if [ ! -d "$GRUPO/$LOGDIR" ];
-	then
-		MISSING=("${MISSING[@]}" "$LOGDIR")
-	else
-		INSTALLED=("${INSTALLED[@]}" "$LOGDIR")
-fi
-
-if [ ! ${#INSTALLED[@]} -eq 0 ]
-	then
-		log "$INFO_COPYRIGHT" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-		log "Direct. de Configuracion: ${FORMAT_BOLD_GREEN}$GRUPO/$CONFDIR${FORMAT_DEFAULT}${FORMAT_BOLD}\n
-			`for FILE in "$GRUPO"/"$CONFDIR"/*
-			do
-				echo "${FILE##*/}"
-			done`${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-		if [ `isInstalled "$BINDIR"` == "true" ]
-			then
-				log "Directorio  Ejecutables: ${FORMAT_BOLD_GREEN}$GRUPO/$BINDIR${FORMAT_DEFAULT}${FORMAT_BOLD}\n
-				`for FILE in "$GRUPO"/"$BINDIR"/*
-				do
-					echo "${FILE##*/}"
-				done`${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-		fi
-
-		if [ `isInstalled "$MAEDIR"` == "true" ]
-			then
-				log "Direct Maestros y Tablas: ${FORMAT_BOLD_GREEN}$GRUPO/$MAEDIR${FORMAT_DEFAULT}${FORMAT_BOLD}\n
-				`for FILE in "$GRUPO"/"$MAEDIR/"*
-				do
-					echo "${FILE##*/}"
-				done`${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-		fi
-
-		if [ `isInstalled "$NOVEDIR"` == "true" ]
-			then
-				log "Directorio de Novedades: ${FORMAT_BOLD_GREEN}$GRUPO/$NOVEDIR${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-		fi
-
-		if [ `isInstalled "$ACEPDIR"` == "true" ]
-			then
-				log "Dir. Novedades Aceptadas: ${FORMAT_BOLD_GREEN}$GRUPO/$ACEPDIR${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-		fi
-
-		if [ `isInstalled "$INFODIR"` == "true" ]
-			then
-				log "Dir. Informes de Salida: ${FORMAT_BOLD_GREEN}$GRUPO/$INFODIR${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-		fi
-
-		if [ `isInstalled "$RECHDIR"` == "true" ]
-			then
-				log "Dir. Archivos Rechazados: ${FORMAT_BOLD_GREEN}$GRUPO/$RECHDIR${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-		fi
-
-		if [ `isInstalled "$LOGDIR"` == "true" ]
-			then
-				log "Dir. de Logs de Comandos: ${FORMAT_BOLD_GREEN}$GRUPO/$LOGDIR${FORMAT_DEFAULT}/<comando>.${FORMAT_BOLD_GREEN}$LOGEXT${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-		fi
-
-		if [ ! ${#MISSING[@]} -eq 0 ]
-			then
-
-				log "$TITLE_MISSING_COMPONENTS" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-
-				if [ `isMissing "$BINDIR"` == "true" ]
-					then
-						log "Directorio  Ejecutables: ${FORMAT_BOLD_RED}$GRUPO/$BINDIR${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-				fi
-
-				if [ `isMissing "$MAEDIR"` == "true" ]
-					then
-						log "Direct Maestros y Tablas: ${FORMAT_BOLD_RED}$GRUPO/$MAEDIR${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-				fi
-
-				if [ `isMissing "$MAEDIR/precios"` == "true" ]
-					then
-						log "Subdirectorio del Direct Maestros y Tablas: ${FORMAT_BOLD_RED}$GRUPO/$MAEDIR/precios${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-				fi
-
-				if [ `isMissing "$MAEDIR/precios/proc"` == "true" ]
-					then
-						log "Subdirectorio del Direct Maestros y Tablas: ${FORMAT_BOLD_RED}$GRUPO/$MAEDIR/precios/proc${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-				fi
-
-				if [ `isMissing "$NOVEDIR"` == "true" ]
-					then
-						log "Directorio de Novedades: ${FORMAT_BOLD_RED}$GRUPO/$NOVEDIR${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-				fi
-
-				if [ `isMissing "$ACEPDIR"` == "true" ]
-					then
-						log "Dir. Novedades Aceptadas: ${FORMAT_BOLD_RED}$GRUPO/$ACEPDIR${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-				fi
-
-				if [ `isMissing "$ACEPDIR/proc"` == "true" ]
-					then
-						log "Subdirectorio del Dir. Novedades Aceptadas: ${FORMAT_BOLD_RED}$GRUPO/$ACEPDIR/proc${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-				fi
-
-				if [ `isMissing "$INFODIR"` == "true" ]
-					then
-						log "Dir. Informes de Salida: ${FORMAT_BOLD_RED}$GRUPO/$INFODIR${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-				fi
-
-				if [ `isMissing "$INFODIR/pres"` == "true" ]
-					then
-						log "Subdirectorio del Dir. Informes de Salida: ${FORMAT_BOLD_RED}$GRUPO/$INFODIR/pres${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-				fi
-
-				if [ `isMissing "$RECHDIR"` == "true" ]
-					then
-						log "Dir. Archivos Rechazados: ${FORMAT_BOLD_RED}$GRUPO/$RECHDIR${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-				fi
-
-				if [ `isMissing "$LOGDIR"` == "true" ]
-					then
-						log "Dir. de Logs de Comandos: ${FORMAT_BOLD_RED}$GRUPO/$LOGDIR/${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-				fi
-
-				log "$INFO_INSTALLATION_STATUS_INCOMPLETE" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-
-				while [ true ];
-				do
-					case `askUser "$QUESTION_COMPLETE_INSTALLATION"` in
-						"Si" )	break;;
-						"No" )	log "$INFO_INSTALLATION_CANCELED_BY_USER" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-								exit $INFO_CODE_INSTALLATION_CANCELED_BY_USER;;
-						* )		echo -e "$INFO_ANSWER_MUST_BE_YES_OR_NO";;
-					esac
-				done
-			else
-				log "$INFO_INSTALLATION_STATUS_COMPLETE" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-
-				log "$INFO_INSTALLATION_CANCELED" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-				exit $INFO_CODE_INSTALLATION_CANCELED
-		fi
-		echo ""
-fi
-
-echo -e "$INFO_COPYRIGHT\n$INFO_TERMS_AND_CONDITIONS"
-while [ true ];
-do
-	case `askUser "$QUESTION_ACCEPT_TERMS_AND_CONDITIONS"` in
-		"Si" )	break;;
-		"No" )	log "$INFO_TERMS_AND_CONDS_NOT_ACCEPTED" "$GRUPO/$CONFDIR/installer" "INFO"
-				exit $INFO_CODE_TERMS_AND_CONDS_NOT_ACCEPTED;;
-		* )		echo -e "$INFO_ANSWER_MUST_BE_YES_OR_NO";;
-	esac
-done
-echo ""
-
-PERLVER=`perl --version | grep \(v`
-PERLVER=${PERLVER:43:1}
-
-if [ $PERLVER -lt $MINPERLVER ]
-	then
-		log "$ERROR_INCORRECT_PERL_VERSION" "$GRUPO/$CONFDIR/installer" "ERR" doEcho
-		exit $ERROR_CODE_INCORRECT_PERL_VERSION
-	else
-		log "$INFO_COPYRIGHT\n$INFO_PERL_VERSION" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-fi
-
-while [ "$CONFIRMINSTALL" == "false" ];
-do
-	unset DIRECTORYNAMESTAKEN
-	echo ""
-	if [ `isMissing "$BINDIR"` == "true" ]
+	#Seting path and execution permissions for Logging and Move scripts. 
+	if [ ! -f "$logBin" ]
 		then
-			askForDirectoryName "Defina el directorio de instalación de los ejecutables ($GRUPO/${FORMAT_BOLD_BLUE}$BINDIR${FORMAT_DEFAULT}): "
-			replaceInMissing "$BINDIR" "$DIRNAME"
-			BINDIR=$DIRNAME
-			DIRECTORYNAMESTAKEN=("${DIRECTORYNAMESTAKEN[@]}" "$DIRNAME")
-			log "Defina el directorio de instalación de los ejecutables ($GRUPO/$BINDIR): $GRUPO/$BINDIR" "$GRUPO/$CONFDIR/installer" "INFO"
+			logBin="$GRUPO/$BINDIR/Logging.sh"
 	fi
-	
-	if [ `isMissing "$MAEDIR"` == "true" ]
+
+	if [ ! -f "$moveBin" ]
 		then
-			askForDirectoryName "Defina directorio para maestros y tablas ($GRUPO/${FORMAT_BOLD_BLUE}$MAEDIR${FORMAT_DEFAULT}): "
-			replaceInMissing "$MAEDIR" "$DIRNAME"
-			MAEDIR=$DIRNAME
-			DIRECTORYNAMESTAKEN=("${DIRECTORYNAMESTAKEN[@]}" "$DIRNAME")
-			log "Defina directorio para maestros y tablas ($MAEDIR): $MAEDIR" "$GRUPO/$CONFDIR/installer" "INFO"
+			moveBin="$GRUPO/$BINDIR/Mover.sh"
 	fi
+
+	chmod +x "$logBin"
 	
-	if [ `isMissing "$NOVEDIR"` == "true" ]
+	chmod +x "$moveBin"
+}
+
+function checkInstalledComponents() {
+	unset installedComponents
+	
+	unset missingComponents
+	
+	if [ ! -d "$GRUPO/$BINDIR" ]
 		then
-			askForDirectoryName "Defina el Directorio de arribo de novedades ($GRUPO/${FORMAT_BOLD_BLUE}$NOVEDIR${FORMAT_DEFAULT}): "
-			replaceInMissing "$NOVEDIR" "$DIRNAME"
-			NOVEDIR=$DIRNAME
-			DIRECTORYNAMESTAKEN=("${DIRECTORYNAMESTAKEN[@]}" "$DIRNAME")
-			log "Defina el Directorio de arribo de novedades ($NOVEDIR): $NOVEDIR" "$GRUPO/$CONFDIR/installer" "INFO"
-	
-			askForSize "Defina espacio mínimo libre para el arribo de novedades en Mbytes (${FORMAT_BOLD_BLUE}$DATASIZE${FORMAT_DEFAULT}): "
-			DATASIZE=$SIZE
-			log "Defina espacio mínimo libre para el arribo de novedades en Mbytes ($DATASIZE): $DATASIZE" "$GRUPO/$CONFDIR/installer" "INFO"
-			while [ true ]
+			missingComponents=("${missingComponents[@]}" "$BINDIR")
+		else
+			installedComponents=("${installedComponents[@]}" "$BINDIR")
+			for script in "${requiredScripts[@]}"
 			do
-				if [ $FREESPACE -lt $DATASIZE ]
+				if [ ! -f "$GRUPO/$BINDIR/$script" ]
 					then
-						log "Insuficiente espacio en disco.\nEspacio disponible: ${FORMAT_BOLD_GREEN}$FREESPACE${FORMAT_DEFAULT} Mb.\nEspacio requerido: ${FORMAT_BOLD_RED}$DATASIZE${FORMAT_DEFAULT} Mb.\nCancele la instalación o inténtelo nuevamente." "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-						askForSize "Defina espacio mínimo libre para el arribo de novedades en Mbytes (${FORMAT_BOLD_BLUE}$DATASIZE${FORMAT_DEFAULT}): "
-						DATASIZE=$SIZE
-						log "Defina espacio mínimo libre para el arribo de novedades en Mbytes ($DATASIZE): $DATASIZE" "$GRUPO/$CONFDIR/installer" "INFO"
-					else
-						break
+						missingComponents=("${missingComponents[@]}" "$script")
 				fi
 			done
 	fi
 	
-	if [ `isMissing "$ACEPDIR"` == "true" ]
+	if [ ! -d "$GRUPO/$MAEDIR" ]
 		then
-			askForDirectoryName "Defina el directorio de grabación de las Novedades aceptadas ($GRUPO/${FORMAT_BOLD_BLUE}$ACEPDIR${FORMAT_DEFAULT}): "
-			replaceInMissing "$ACEPDIR" "$DIRNAME"
-			ACEPDIR=$DIRNAME
-			DIRECTORYNAMESTAKEN=("${DIRECTORYNAMESTAKEN[@]}" "$DIRNAME")
-			log "Defina el directorio de grabación de las Novedades aceptadas ($ACEPDIR): $ACEPDIR" "$GRUPO/$CONFDIR/installer" "INFO"
-	fi
-	
-	if [ `isMissing "$INFODIR"` == "true" ]
-		then
-			askForDirectoryName "Defina el directorio de grabación de los informes de salida ($GRUPO/${FORMAT_BOLD_BLUE}$INFODIR${FORMAT_DEFAULT}): "
-			replaceInMissing "$INFODIR" "$DIRNAME"
-			INFODIR=$DIRNAME
-			DIRECTORYNAMESTAKEN=("${DIRECTORYNAMESTAKEN[@]}" "$DIRNAME")
-			log "Defina el directorio de grabación de los informes de salida ($INFODIR): $INFODIR" "$GRUPO/$CONFDIR/installer" "INFO"
-	fi
-	
-	if [ `isMissing "$RECHDIR"` == "true" ]
-		then
-			askForDirectoryName "Defina el directorio de grabación de Archivos rechazados ($GRUPO/${FORMAT_BOLD_BLUE}$RECHDIR${FORMAT_DEFAULT}): "
-			replaceInMissing "$RECHDIR" "$DIRNAME"
-			RECHDIR=$DIRNAME
-			DIRECTORYNAMESTAKEN=("${DIRECTORYNAMESTAKEN[@]}" "$DIRNAME")
-			log "Defina el directorio de grabación de Archivos rechazados ($RECHDIR): $RECHDIR" "$GRUPO/$CONFDIR/installer" "INFO"
-	fi
-	
-	if [ `isMissing "$LOGDIR"` == "true" ]
-		then
-			askForDirectoryName "Defina el directorio de logs ($GRUPO/${FORMAT_BOLD_BLUE}$LOGDIR${FORMAT_DEFAULT}): "
-			replaceInMissing "$LOGDIR" "$DIRNAME"
-			LOGDIR=$DIRNAME
-			DIRECTORYNAMESTAKEN=("${DIRECTORYNAMESTAKEN[@]}" "$DIRNAME")
-			log "Defina el directorio de logs ($LOGDIR): $LOGDIR" "$GRUPO/$CONFDIR/installer" "INFO"
-	
-			LOGEXT=`askUser "Ingrese la extensión para los archivos de log: (.${FORMAT_BOLD_BLUE}$LOGEXT${FORMAT_DEFAULT}): "`
-			log "Ingrese la extensión para los archivos de log: (.$LOGEXT): $LOGEXT" "$GRUPO/$CONFDIR/installer" "INFO"
-	
-			askForSize "Defina el tamaño máximo para los archivos .${FORMAT_BOLD_BLUE}$LOGEXT${FORMAT_DEFAULT} en Kbytes (${FORMAT_BOLD_BLUE}$LOGSIZE${FORMAT_DEFAULT}): "
-			LOGSIZE=$SIZE
-			log "Defina el tamaño máximo para los archivos $LOGEXT en Kbytes ($LOGSIZE): $LOGSIZE" "$GRUPO/$CONFDIR/installer" "INFO"
-			while [ true ]
+			missingComponents=("${missingComponents[@]}" "$MAEDIR")
+		else
+			installedComponents=("${installedComponents[@]}" "$MAEDIR")
+			if [ ! -d "$GRUPO/$MAEDIR/precios" ]
+				then
+					missingComponents=("${missingComponents[@]}" "$MAEDIR/precios")
+			fi
+			if [ ! -d "$GRUPO/$MAEDIR/precios/proc" ]
+				then
+					missingComponents=("${missingComponents[@]}" "$MAEDIR/precios/proc")
+			fi
+			for dataFile in "${requiredDataFiles[@]}"
 			do
-				if [ $LOGSIZE -lt $MINLOGSIZEINKB -o $LOGSIZE -gt $MAXLOGSIZEINKB ]
+				if [ ! -f "$GRUPO/$MAEDIR/$dataFile" ]
 					then
-						log "El tamaño máximo para los archivos .${FORMAT_BOLD_BLUE}$LOGEXT${FORMAT_DEFAULT} debe estar entre ${FORMAT_BOLD_GREEN}$MINLOGSIZEINKB${FORMAT_DEFAULT}  y ${FORMAT_BOLD_GREEN}$MAXLOGSIZEINKB${FORMAT_DEFAULT}. Por favor ingrese un valor en dicho rango" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-						askForSize "Defina el tamaño máximo para los archivos .${FORMAT_BOLD_BLUE}$LOGEXT${FORMAT_DEFAULT} en Kbytes (${FORMAT_BOLD_BLUE}$LOGSIZE${FORMAT_DEFAULT}): "
-						LOGSIZE=$SIZE
-						log "Defina el tamaño máximo para los archivos $LOGEXT en Kbytes ($LOGSIZE): $LOGSIZE" "$GRUPO/$CONFDIR/installer" "INFO"
-					else
-						break
+						missingComponents=("${missingComponents[@]}" "$dataFile")
 				fi
 			done
 	fi
+	
+	if [ ! -d "$GRUPO/$NOVEDIR" ]
+		then
+			missingComponents=("${missingComponents[@]}" "$NOVEDIR")
+		else
+			installedComponents=("${installedComponents[@]}" "$NOVEDIR")
+	fi
+	
+	if [ ! -d "$GRUPO/$ACEPDIR" ]
+		then
+			missingComponents=("${missingComponents[@]}" "$ACEPDIR")
+		else
+			installedComponents=("${installedComponents[@]}" "$ACEPDIR")
+			if [ ! -d "$GRUPO/$ACEPDIR/proc" ]
+				then
+					missingComponents=("${missingComponents[@]}" "$ACEPDIR/proc")
+			fi
+	fi
+	
+	if [ ! -d "$GRUPO/$INFODIR" ]
+		then
+			missingComponents=("${missingComponents[@]}" "$INFODIR")
+		else
+			installedComponents=("${installedComponents[@]}" "$INFODIR")
+			if [ ! -d "$GRUPO/$INFODIR/pres" ]
+				then
+					missingComponents=("${missingComponents[@]}" "$INFODIR/pres")
+			fi
+	fi
+	
+	if [ ! -d "$GRUPO/$RECHDIR" ]
+		then
+			missingComponents=("${missingComponents[@]}" "$RECHDIR")
+		else
+			installedComponents=("${installedComponents[@]}" "$RECHDIR")
+	fi
+	
+	if [ ! -d "$GRUPO/$LOGDIR" ]
+		then
+			missingComponents=("${missingComponents[@]}" "$LOGDIR")
+		else
+			installedComponents=("${installedComponents[@]}" "$LOGDIR")
+	fi
+}
+
+function printInstallationStatus() {
+
+	log "Direct. de Configuracion: ${boldGreen}$GRUPO/$CONFDIR${default}${bold}
+	`printFilesInDir "$GRUPO/$CONFDIR"`
+	${default}" "INFO" doEcho
+	if [ `isInstalled "$BINDIR"` == true ]
+		then
+			log "Directorio  Ejecutables: ${boldGreen}$GRUPO/$BINDIR${default}${bold}
+			`printFilesInDir "$GRUPO/$BINDIR"`
+			${default}" "INFO" doEcho
+	fi
+
+	if [ `isInstalled "$MAEDIR"` == true ]
+		then
+			log "Direct Maestros y Tablas: ${boldGreen}$GRUPO/$MAEDIR${default}${bold}
+			`printFilesInDir "$GRUPO/$MAEDIR"`
+			${default}" "INFO" doEcho
+	fi
+
+	if [ `isInstalled "$NOVEDIR"` == true ]
+		then
+			log "Directorio de Novedades: ${boldGreen}$GRUPO/$NOVEDIR${default}" "INFO" doEcho
+	fi
+
+	if [ `isInstalled "$ACEPDIR"` == true ]
+		then
+			log "Dir. Novedades Aceptadas: ${boldGreen}$GRUPO/$ACEPDIR${default}" "INFO" doEcho
+	fi
+
+	if [ `isInstalled "$INFODIR"` == true ]
+		then
+			log "Dir. Informes de Salida: ${boldGreen}$GRUPO/$INFODIR${default}" "INFO" doEcho
+	fi
+
+	if [ `isInstalled "$RECHDIR"` == true ]
+		then
+			log "Dir. Archivos Rechazados: ${boldGreen}$GRUPO/$RECHDIR${default}" "INFO" doEcho
+	fi
+
+	if [ `isInstalled "$LOGDIR"` == true ]
+		then
+			log "Dir. de Logs de Comandos: ${boldGreen}$GRUPO/$LOGDIR${default}/<comando>.${boldGreen}$LOGEXT${default}" "INFO" doEcho
+	fi
+
+	if [ ! ${#missingComponents[@]} -eq 0 ]
+		then
+
+			log "$TITLE_MISSING_COMPONENTS" "INFO" doEcho
+
+			if [ `isMissing "$BINDIR"` == true ]
+				then
+					log "Directorio Ejecutables: ${boldRed}$GRUPO/$BINDIR${default}" "INFO" doEcho
+			fi
+
+			for script in "${requiredScripts[@]}"
+			do
+				if [ `isMissing "$script"` == true ]
+				then
+					log "Programa o función: ${boldRed}$GRUPO/$BINDIR/$script${default}" "INFO" doEcho
+				fi
+			done
+
+			if [ `isMissing "$MAEDIR"` == true ]
+				then
+					log "Direct Maestros y Tablas: ${boldRed}$GRUPO/$MAEDIR${default}" "INFO" doEcho
+			fi
+
+			for dataFile in "${requiredDataFiles[@]}"
+			do
+				if [ `isMissing "$dataFile"` == true ]
+				then
+					log "Archivo maestro o tabla: ${boldRed}$GRUPO/$MAEDIR/$dataFile${default}" "INFO" doEcho
+				fi
+			done
+
+			if [ `isMissing "$MAEDIR/precios"` == true ]
+				then
+					log "Subdirectorio del Direct Maestros y Tablas: ${boldRed}$GRUPO/$MAEDIR/precios${default}" "INFO" doEcho
+			fi
+
+			if [ `isMissing "$MAEDIR/precios/proc"` == true ]
+				then
+					log "Subdirectorio del Direct Maestros y Tablas: ${boldRed}$GRUPO/$MAEDIR/precios/proc${default}" "INFO" doEcho
+			fi
+
+			if [ `isMissing "$NOVEDIR"` == true ]
+				then
+					log "Directorio de Novedades: ${boldRed}$GRUPO/$NOVEDIR${default}" "INFO" doEcho
+			fi
+
+			if [ `isMissing "$ACEPDIR"` == true ]
+				then
+					log "Dir. Novedades Aceptadas: ${boldRed}$GRUPO/$ACEPDIR${default}" "INFO" doEcho
+			fi
+
+			if [ `isMissing "$ACEPDIR/proc"` == true ]
+				then
+					log "Subdirectorio del Dir. Novedades Aceptadas: ${boldRed}$GRUPO/$ACEPDIR/proc${default}" "INFO" doEcho
+			fi
+
+			if [ `isMissing "$INFODIR"` == true ]
+				then
+					log "Dir. Informes de Salida: ${boldRed}$GRUPO/$INFODIR${default}" "INFO" doEcho
+			fi
+
+			if [ `isMissing "$INFODIR/pres"` == true ]
+				then
+					log "Subdirectorio del Dir. Informes de Salida: ${boldRed}$GRUPO/$INFODIR/pres${default}" "INFO" doEcho
+			fi
+
+			if [ `isMissing "$RECHDIR"` == true ]
+				then
+					log "Dir. Archivos Rechazados: ${boldRed}$GRUPO/$RECHDIR${default}" "INFO" doEcho
+			fi
+
+			if [ `isMissing "$LOGDIR"` == true ]
+				then
+					log "Dir. de Logs de Comandos: ${boldRed}$GRUPO/$LOGDIR/${default}" "INFO" doEcho
+			fi
+
+			log "$INFO_INSTALLATION_STATUS_INCOMPLETE" "INFO" doEcho
+
+			while [ true ];
+			do
+				askUser "$QUESTION_COMPLETE_INSTALLATION"
+				case $resp in
+					"Si" )
+						break;;
+					"No" )
+						log "$INFO_INSTALLATION_CANCELED_BY_USER" "INFO" doEcho
+						exit $INFO_CODE_INSTALLATION_CANCELED_BY_USER;;
+					* )
+						echo -e "$INFO_ANSWER_MUST_BE_YES_OR_NO";;
+				esac
+			done
+		else
+			log "$INFO_INSTALLATION_STATUS_COMPLETE" "INFO" doEcho
+
+			log "$INFO_INSTALLATION_CANCELED" "INFO" doEcho
+
+			exit $INFO_CODE_INSTALLATION_CANCELED
+	fi
+}
+
+function checkTermsAndConditions() {
+	echo -e "$INFO_TERMS_AND_CONDITIONS"
 	echo ""
-	log "$INFO_COPYRIGHT" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-
-	if [ ${#MISSING[@]} -eq 0 ]
-		then
-			log "Direct. de Configuración: ${FORMAT_BOLD_BLUE}$CONFDIR${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-	fi
-
-	if [ `isMissing "$BINDIR"` == "true" ]
-		then
-			log "Directorio Ejecutables: ${FORMAT_BOLD_BLUE}$GRUPO/$BINDIR${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-	fi
-
-	if [ `isMissing "$MAEDIR"` == "true" ]
-		then
-			log "Direct Maestros y Tablas: ${FORMAT_BOLD_BLUE}$GRUPO/$MAEDIR${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-	fi
-
-	if [ `isMissing "$NOVEDIR"` == "true" ]
-		then
-			log "Directorio de Novedades: ${FORMAT_BOLD_BLUE}$GRUPO/$NOVEDIR${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-			log "Espacio mínimo libre para arribos: ${FORMAT_BOLD_BLUE}$DATASIZE${FORMAT_DEFAULT} Mb\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-	fi
-
-	if [ `isMissing "$ACEPDIR"` == "true" ]
-		then
-			log "Dir. Novedades Aceptadas: ${FORMAT_BOLD_BLUE}$GRUPO/$ACEPDIR${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-	fi
-
-	if [ `isMissing "$INFODIR"` == "true" ]
-		then
-			log "Dir. Informes de Salida: ${FORMAT_BOLD_BLUE}$GRUPO/$INFODIR${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-	fi
-
-	if [ `isMissing "$RECHDIR"` == "true" ]
-		then
-			log "Dir. Archivos Rechazados: ${FORMAT_BOLD_BLUE}$GRUPO/$RECHDIR${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-	fi
-
-	if [ `isMissing "$LOGDIR"` == "true" ]
-		then
-			log "Dir. de Logs de Comandos: ${FORMAT_BOLD_BLUE}$GRUPO/$LOGDIR${FORMAT_DEFAULT}/<comando>.${FORMAT_BOLD_BLUE}$LOGEXT${FORMAT_DEFAULT}\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-			log "Tamaño máximo para los archivos de log del sistema: ${FORMAT_BOLD_BLUE}$LOGSIZE${FORMAT_DEFAULT} Kb\n" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
-	fi
-
-	log "$INFO_INSTALLATION_STATUS_READY" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
 
 	while [ true ];
 	do
-		case `askUser "$QUESTION_CONFIRM_INSTALLATION"` in
-			"Si" )	CONFIRMINSTALL="true"
-					break;;
-			"No" )	log "El usuario decidió reingresar los nombres de directorios" "$GRUPO/$CONFDIR/installer" "INFO"
-					break;;
-			* )		echo -e "$INFO_ANSWER_MUST_BE_YES_OR_NO";;
+		askUser "$QUESTION_ACCEPT_TERMS_AND_CONDITIONS"
+		case $resp in
+			"Si" )
+				break;;
+			"No" )
+				log "$INFO_TERMS_AND_CONDS_NOT_ACCEPTED" "INFO"
+				exit $INFO_CODE_TERMS_AND_CONDS_NOT_ACCEPTED;;
+			* )
+				echo -e "$INFO_ANSWER_MUST_BE_YES_OR_NO";;
 		esac
 	done
-done
+}
+
+function checkPerlVersion() {
+	perlVersion=`perl --version | grep \(v`
+	perlVersion=${perlVersion:43:1}
+	
+	if [ $perlVersion -lt $minPerlVersionAllowed ]
+		then
+			log "$ERROR_INCORRECT_PERL_VERSION" "ERR" doEcho
+			exit $ERROR_CODE_INCORRECT_PERL_VERSION
+		else
+			log "$INFO_COPYRIGHT" "INFO" doEcho
+			log "$INFO_PERL_VERSION" "INFO" doEcho
+	fi
+}
+
+function getDirectoryNames() {
+	while [ "$confirmInstall" == false ];
+	do
+		unset directoryNamesTaken
+		if [ `isMissing "$BINDIR"` == true ]
+			then
+				askForDirectoryName "Defina el directorio de instalación de los ejecutables ($GRUPO/${boldBlue}$BINDIR${default}): " "$BINDIR"
+				replaceInMissing "$BINDIR" "$dirName"
+				BINDIR=$dirName
+				directoryNamesTaken=("${directoryNamesTaken[@]}" "$dirName")
+				log "Defina el directorio de instalación de los ejecutables ($GRUPO/${boldBlue}$BINDIR${default}): ${bold}$GRUPO/$BINDIR${default}" "INFO"
+		fi
+		
+		if [ `isMissing "$MAEDIR"` == true ]
+			then
+				askForDirectoryName "Defina directorio para maestros y tablas ($GRUPO/${boldBlue}$MAEDIR${default}): " "$MAEDIR"
+				replaceInMissing "$MAEDIR" "$dirName"
+				MAEDIR=$dirName
+				directoryNamesTaken=("${directoryNamesTaken[@]}" "$dirName")
+				log "Defina directorio para maestros y tablas ($GRUPO/${boldBlue}$MAEDIR${default}): ${bold}$MAEDIR${default}" "INFO"
+		fi
+		
+		if [ `isMissing "$NOVEDIR"` == true ]
+			then
+				askForDirectoryName "Defina el Directorio de arribo de novedades ($GRUPO/${boldBlue}$NOVEDIR${default}): " "$NOVEDIR"
+				replaceInMissing "$NOVEDIR" "$dirName"
+				NOVEDIR=$dirName
+				directoryNamesTaken=("${directoryNamesTaken[@]}" "$dirName")
+				log "Defina el Directorio de arribo de novedades ($GRUPO/${boldBlue}$NOVEDIR${default}): ${bold}$NOVEDIR${default}" "INFO"
+		
+				askForSize "Defina espacio mínimo libre para el arribo de novedades en Mbytes (${boldBlue}$DATASIZE${default}): " "$DATASIZE"
+				log "Defina espacio mínimo libre para el arribo de novedades en Mbytes (${boldBlue}$DATASIZE${default}): ${bold}$size${default}" "INFO"
+				while [ true ]
+				do
+					if [ $freeSpace -lt $size ]
+						then
+							log "\nInsuficiente espacio en disco.\nEspacio disponible: ${boldGreen}$freeSpace${default} Mb.\nEspacio requerido: ${boldRed}$size${default} Mb.\nCancele la instalación o inténtelo nuevamente." "INFO" doEcho
+							askForSize "Defina espacio mínimo libre para el arribo de novedades en Mbytes (${boldBlue}$DATASIZE${default}): " "$DATASIZE"
+							log "Defina espacio mínimo libre para el arribo de novedades en Mbytes (${boldBlue}$DATASIZE${default}): ${bold}$size${default}" "INFO"
+						else
+							DATASIZE=$size
+							break
+					fi
+				done
+		fi
+		
+		if [ `isMissing "$ACEPDIR"` == true ]
+			then
+				askForDirectoryName "Defina el directorio de grabación de las Novedades aceptadas ($GRUPO/${boldBlue}$ACEPDIR${default}): " "$ACEPDIR"
+				replaceInMissing "$ACEPDIR" "$dirName"
+				ACEPDIR=$dirName
+				directoryNamesTaken=("${directoryNamesTaken[@]}" "$dirName")
+				log "Defina el directorio de grabación de las Novedades aceptadas ($GRUPO/${boldBlue}$ACEPDIR${default}): ${bold}$ACEPDIR${default}" "INFO"
+		fi
+		
+		if [ `isMissing "$INFODIR"` == true ]
+			then
+				askForDirectoryName "Defina el directorio de grabación de los informes de salida ($GRUPO/${boldBlue}$INFODIR${default}): " "$INFODIR"
+				replaceInMissing "$INFODIR" "$dirName"
+				INFODIR=$dirName
+				directoryNamesTaken=("${directoryNamesTaken[@]}" "$dirName")
+				log "Defina el directorio de grabación de los informes de salida ($GRUPO/${boldBlue}$INFODIR${default}): ${bold}$INFODIR${default}" "INFO"
+		fi
+		
+		if [ `isMissing "$RECHDIR"` == true ]
+			then
+				askForDirectoryName "Defina el directorio de grabación de Archivos rechazados ($GRUPO/${boldBlue}$RECHDIR${default}): " "$RECHDIR"
+				replaceInMissing "$RECHDIR" "$dirName"
+				RECHDIR=$dirName
+				directoryNamesTaken=("${directoryNamesTaken[@]}" "$dirName")
+				log "Defina el directorio de grabación de Archivos rechazados ($GRUPO/${boldBlue}$RECHDIR${default}): ${bold}$RECHDIR${default}" "INFO"
+		fi
+		
+		if [ `isMissing "$LOGDIR"` == true ]
+			then
+				askForDirectoryName "Defina el directorio de logs ($GRUPO/${boldBlue}$LOGDIR${default}): " "$LOGDIR"
+				replaceInMissing "$LOGDIR" "$dirName"
+				LOGDIR=$dirName
+				directoryNamesTaken=("${directoryNamesTaken[@]}" "$dirName")
+				log "Defina el directorio de logs ($GRUPO/${boldBlue}$LOGDIR${default}): ${bold}$LOGDIR${default}" "INFO"
+	
+				askUser "Ingrese la extensión para los archivos de log: (.${boldBlue}$LOGEXT${default}): "
+				if [ "$resp" == "" ]
+					then
+						LOGEXT=$LOGEXT
+					else
+						LOGEXT=$resp
+				fi
+	
+				log "Ingrese la extensión para los archivos de log: (.${boldBlue}$LOGEXT${default}): ${bold}$LOGEXT${default}" "INFO"
+		
+				askForSize "Defina el tamaño máximo para los archivos .${boldBlue}$LOGEXT${default} en Kbytes (${boldBlue}$LOGSIZE${default}): " "$LOGSIZE"
+				log "Defina el tamaño máximo para los archivos .${boldBlue}$LOGEXT${default} en Kbytes (${boldBlue}$LOGSIZE${default}): ${bold}$size${default}" "INFO"
+				while [ true ]
+				do
+					if [ $size -lt $minLogSizeInKb -o $size -gt $maxLogSizeInKb ]
+						then
+							log "\nEl tamaño máximo para los archivos .${boldBlue}$LOGEXT${default} debe estar entre ${boldGreen}$minLogSizeInKb${default}  y ${boldGreen}$maxLogSizeInKb${default}. Por favor ingrese un valor en dicho rango" "INFO" doEcho
+							askForSize "Defina el tamaño máximo para los archivos .${boldBlue}$LOGEXT${default} en Kbytes (${boldBlue}$LOGSIZE${default}): " "$LOGSIZE"
+							log "Defina el tamaño máximo para los archivos .${boldBlue}$LOGEXT${default} en Kbytes (${boldBlue}$LOGSIZE${default}): ${bold}$size${default}" "INFO"
+						else
+							LOGSIZE=$size
+							break
+					fi
+				done
+		fi
+		echo ""
+		log "$INFO_COPYRIGHT" "INFO" doEcho
+	
+		if [ ${#missingComponents[@]} -eq 0 ]
+			then
+				log "Direct. de Configuración: ${boldBlue}$CONFDIR${default}" "INFO" doEcho
+		fi
+	
+		if [ `isMissing "$BINDIR"` == true ]
+			then
+				log "Directorio Ejecutables: ${boldBlue}$GRUPO/$BINDIR${default}" "INFO" doEcho
+		fi
+
+		for script in "${requiredScripts[@]}"
+		do
+			if [ `isMissing "$script"` == true ]
+				then
+					log "Programa o función: ${boldBlue}$GRUPO/$BINDIR/$script${default}" "INFO" doEcho
+			fi
+		done
+	
+		if [ `isMissing "$MAEDIR"` == true ]
+			then
+				log "Direct Maestros y Tablas: ${boldBlue}$GRUPO/$MAEDIR${default}" "INFO" doEcho
+		fi
+
+		for dataFile in "${requiredDataFiles[@]}"
+		do
+			if [ `isMissing "$dataFile"` == true ]
+				then
+					log "Archivo maestro o tabla: ${boldBlue}$GRUPO/$MAEDIR/$dataFile${default}" "INFO" doEcho
+			fi
+		done
+	
+		if [ `isMissing "$NOVEDIR"` == true ]
+			then
+				log "Directorio de Novedades: ${boldBlue}$GRUPO/$NOVEDIR${default}" "INFO" doEcho
+				log "Espacio mínimo libre para arribos: ${boldBlue}$DATASIZE${default} Mb" "INFO" doEcho
+		fi
+	
+		if [ `isMissing "$ACEPDIR"` == true ]
+			then
+				log "Dir. Novedades Aceptadas: ${boldBlue}$GRUPO/$ACEPDIR${default}" "INFO" doEcho
+		fi
+	
+		if [ `isMissing "$INFODIR"` == true ]
+			then
+				log "Dir. Informes de Salida: ${boldBlue}$GRUPO/$INFODIR${default}" "INFO" doEcho
+		fi
+	
+		if [ `isMissing "$RECHDIR"` == true ]
+			then
+				log "Dir. Archivos Rechazados: ${boldBlue}$GRUPO/$RECHDIR${default}" "INFO" doEcho
+		fi
+	
+		if [ `isMissing "$LOGDIR"` == true ]
+			then
+				log "Dir. de Logs de Comandos: ${boldBlue}$GRUPO/$LOGDIR${default}/<comando>.${boldBlue}$LOGEXT${default}" "INFO" doEcho
+				log "Tamaño máximo para los archivos de log del sistema: ${boldBlue}$LOGSIZE${default} Kb" "INFO" doEcho
+		fi
+	
+		log "$INFO_INSTALLATION_STATUS_READY" "INFO" doEcho
+	
+		while [ true ];
+		do
+			askUser "$QUESTION_CONFIRM_INSTALLATION"
+			case $resp in
+				"Si" )
+					confirmInstall=true
+					break;;
+				"No" )
+					log "El usuario decidió reingresar los nombres de directorios" "INFO"
+					clear
+					break;;
+				* )
+					echo -e "$INFO_ANSWER_MUST_BE_YES_OR_NO";;
+			esac
+		done
+	done
+}
+
+function confirmInstallation() {
+	while [ true ];
+	do
+		askUser "$QUESTION_START_INSTALLATION"
+		case $resp in
+			"Si" )
+				break;;
+			"No" )
+				log "$INFO_INSTALLATION_CANCELED_BY_USER" "INFO";
+				exit $INFO_CODE_INSTALLATION_CANCELED_BY_USER;;
+			* )
+				echo -e "$INFO_ANSWER_MUST_BE_YES_OR_NO";;
+			esac
+	done
+}
+
+function createDirectories() {
+	echo -e "$TITLE_CREATING_DIRECTORY_STRUCTURE\n"
+
+	if [ `isMissing "$BINDIR"` == true ]
+		then
+			mkdir -p "$GRUPO/$BINDIR"
+			echo -e "${boldBlue}$GRUPO/$BINDIR${default}"
+	fi
+	
+	if [ `isMissing "$MAEDIR"` == true ]
+		then
+			mkdir -p "$GRUPO/$MAEDIR/precios/proc"
+			echo -e "${boldBlue}$GRUPO/$MAEDIR${default}"
+			echo -e "${boldBlue}$GRUPO/$MAEDIR/precios${default}"
+			echo -e "${boldBlue}$GRUPO/$MAEDIR/precios/proc${default}"
+		else
+			if [ `isMissing "$MAEDIR/precios"` == true ]
+				then
+					mkdir -p "$GRUPO/$MAEDIR/precios/proc"
+					echo -e "${boldBlue}$GRUPO/$MAEDIR/precios${default}"
+					echo -e "${boldBlue}$GRUPO/$MAEDIR/precios/proc${default}"
+				else
+					if [ `isMissing "$MAEDIR/precios/proc"` == true ]
+						then
+							mkdir -p "$GRUPO/$MAEDIR/precios/proc"
+							echo -e "${boldBlue}$GRUPO/$MAEDIR/precios/proc${default}"
+					fi
+			fi
+	fi
+	
+	if [ `isMissing "$NOVEDIR"` == true ]
+		then
+			mkdir -p "$GRUPO/$NOVEDIR"
+			echo -e "${boldBlue}$GRUPO/$NOVEDIR${default}"
+	fi
+	
+	if [ `isMissing "$ACEPDIR"` == true ]
+		then
+			mkdir -p "$GRUPO/$ACEPDIR/proc"
+			echo -e "${boldBlue}$GRUPO/$ACEPDIR${default}"
+			echo -e "${boldBlue}$GRUPO/$ACEPDIR/proc${default}"
+		else
+			if [ `isMissing "$ACEPDIR/proc"` == true ]
+				then
+					mkdir -p "$GRUPO/$ACEPDIR/proc"
+					echo -e "${boldBlue}$GRUPO/$ACEPDIR/proc${default}"
+			fi
+	fi
+	
+	if [ `isMissing "$INFODIR"` == true ]
+		then
+			mkdir -p "$GRUPO/$INFODIR/pres"
+			echo -e "${boldBlue}$GRUPO/$INFODIR${default}"
+			echo -e "${boldBlue}$GRUPO/$INFODIR/pres${default}"
+		else
+			if [ `isMissing "$INFODIR/pres"` == true ]
+				then
+					mkdir -p "$GRUPO/$INFODIR/pres"
+					echo -e "${boldBlue}$GRUPO/$INFODIR/pres${default}"
+			fi
+	fi
+	
+	if [ `isMissing "$RECHDIR"` == true ]
+		then
+			mkdir -p "$GRUPO/$RECHDIR"
+			echo -e "${boldBlue}$GRUPO/$RECHDIR${default}"
+	fi
+	
+	if [ `isMissing "$LOGDIR"` == true ]
+		then
+			mkdir -p "$GRUPO/$LOGDIR"
+			echo -e "${boldBlue}$GRUPO/$LOGDIR${default}"
+	fi
+
+	echo ""
+}
+
+function moveFiles() {
+	echo -e "$TITLE_INSTALLING_MASTER_FILES_AND_TABLES\n"
+
+	for dataFile in "${requiredDataFiles[@]}"
+	do
+		if [ -f "datos/$dataFile" ]
+			then
+				"$moveBin" "$GRUPO/datos/$dataFile" "$GRUPO/$MAEDIR"
+		fi
+	done
+
+	echo -e "$TITLE_INSTALLING_PROGRAMS_AND_FUNCTIONS\n"
+
+	for script in "${requiredScripts[@]}"
+	do
+		if [ -f "$script" -a "${script##*/}" != "Mover.sh" ]
+			then
+				"$moveBin" "$GRUPO/$script" "$GRUPO/$BINDIR"
+		fi
+	done
+
+	"$moveBin" "$moveBin" "$GRUPO/$BINDIR"
+
+	logBin="$GRUPO/$BINDIR/Logging.sh"
+}
+
+function updateConfig() {
+	echo -e "$TITLE_UPDATING_SYSTEM_CONFIG\n"
+	echo "GRUPO=$GRUPO=`timeStamp`" > "$installerConfigFile"
+	echo "CONFDIR=$CONFDIR=$USER=`timeStamp`" >> "$installerConfigFile"
+	echo "BINDIR=$BINDIR=$USER=`timeStamp`" >> "$installerConfigFile"
+	echo "MAEDIR=$MAEDIR=$USER=`timeStamp`" >> "$installerConfigFile"
+	echo "NOVEDIR=$NOVEDIR=$USER=`timeStamp`" >> "$installerConfigFile"
+	echo "DATASIZE=$DATASIZE=$USER=`timeStamp`" >> "$installerConfigFile"
+	echo "ACEPDIR=$ACEPDIR=$USER=`timeStamp`" >> "$installerConfigFile"
+	echo "INFODIR=$INFODIR=$USER=`timeStamp`" >> "$installerConfigFile"
+	echo "RECHDIR=$RECHDIR=$USER=`timeStamp`" >> "$installerConfigFile"
+	echo "LOGDIR=$LOGDIR=$USER=`timeStamp`" >> "$installerConfigFile"
+	echo "LOGEXT=$LOGEXT=$USER=`timeStamp`" >> "$installerConfigFile"
+	echo "LOGSIZE=$LOGSIZE=$USER=`timeStamp`" >> "$installerConfigFile"
+	echo "NUMSEC=0=$USER=`timeStamp`" >> "$installerConfigFile"
+}
+
+# ============================== Main ========================================
+initialize
+
+log "$INFO_INSTALLER_EXECUTION_STARTED" "INFO"
+
+log "$LABEL_INSTALLATION_LOG ${boldGreen}$installerLogFile.log${default}" "INFO" doEcho
+
+log "$LABEL_DEFAULT_CONFIG_DIR ${boldGreen}$GRUPO/$CONFDIR${default}" "INFO" doEcho
+
+checkInstalledComponents
+
+log "$INFO_COPYRIGHT" "INFO" doEcho
+
+if [ "$prevInstallationExists" == true ]
+	then
+		printInstallationStatus
+fi
+
+checkTermsAndConditions
+
 echo ""
+
+checkPerlVersion
+
+getDirectoryNames
+
+echo ""
+
+confirmInstallation
 
 clear
 
-while [ true ];
-do
-	case `askUser "$QUESTION_START_INSTALLATION"` in
-		"Si" ) 	break;;
-		"No" )	log "$INFO_INSTALLATION_CANCELED_BY_USER" "$GRUPO/$CONFDIR/installer" "INFO";
-				exit $INFO_CODE_INSTALLATION_CANCELED_BY_USER;;
-		* ) 		echo -e "$INFO_ANSWER_MUST_BE_YES_OR_NO";;
-	esac
-done
-echo ""
+createDirectories
 
-echo -e "$TITLE_CREATING_DIRECTORY_STRUCTURE"
-if [ `isMissing "$BINDIR"` == "true" ]
-	then
-		mkdir -p "$GRUPO/$BINDIR"
-		echo -e "${FORMAT_BOLD_BLUE}$GRUPO/$BINDIR${FORMAT_DEFAULT}"
-fi
+moveFiles
 
-if [ `isMissing "$MAEDIR"` == "true" ]
-	then
-		mkdir -p "$GRUPO/$MAEDIR/precios/proc"
-		echo -e "${FORMAT_BOLD_BLUE}$GRUPO/$MAEDIR${FORMAT_DEFAULT}"
-		echo -e "${FORMAT_BOLD_BLUE}$GRUPO/$MAEDIR/precios${FORMAT_DEFAULT}"
-		echo -e "${FORMAT_BOLD_BLUE}$GRUPO/$MAEDIR/precios/proc${FORMAT_DEFAULT}"
-	else
-		if [ `isMissing "$MAEDIR/precios"` == "true" ]
-			then
-				mkdir -p "$GRUPO/$MAEDIR/precios/proc"
-				echo -e "${FORMAT_BOLD_BLUE}$GRUPO/$MAEDIR/precios${FORMAT_DEFAULT}"
-				echo -e "${FORMAT_BOLD_BLUE}$GRUPO/$MAEDIR/precios/proc${FORMAT_DEFAULT}"
-			else
-				if [ `isMissing "$MAEDIR/precios/proc"` == "true" ]
-					then
-						mkdir -p "$GRUPO/$MAEDIR/precios/proc"
-						echo -e "${FORMAT_BOLD_BLUE}$GRUPO/$MAEDIR/precios/proc${FORMAT_DEFAULT}"
-				fi
-		fi
-fi
+updateConfig
 
-if [ `isMissing "$NOVEDIR"` == "true" ]
-	then
-		mkdir -p "$GRUPO/$NOVEDIR"
-		echo -e "${FORMAT_BOLD_BLUE}$GRUPO/$NOVEDIR${FORMAT_DEFAULT}"
-fi
+log "$INFO_INSTALLATION_COMPLETE" "INFO" doEcho
 
-if [ `isMissing "$ACEPDIR"` == "true" ]
-	then
-		mkdir -p "$GRUPO/$ACEPDIR/proc"
-		echo -e "${FORMAT_BOLD_BLUE}$GRUPO/$ACEPDIR${FORMAT_DEFAULT}"
-		echo -e "${FORMAT_BOLD_BLUE}$GRUPO/$ACEPDIR/proc${FORMAT_DEFAULT}"
-	else
-		if [ `isMissing "$ACEPDIR/proc"` == "true" ]
-			then
-				mkdir -p "$GRUPO/$ACEPDIR/proc"
-				echo -e "${FORMAT_BOLD_BLUE}$GRUPO/$ACEPDIR/proc${FORMAT_DEFAULT}"
-		fi
-fi
+chmod +x "$GRUPO/$BINDIR/Initializer.sh"
 
-if [ `isMissing "$INFODIR"` == "true" ]
-	then
-		mkdir -p "$GRUPO/$INFODIR/pres"
-		echo -e "${FORMAT_BOLD_BLUE}$GRUPO/$INFODIR${FORMAT_DEFAULT}"
-		echo -e "${FORMAT_BOLD_BLUE}$GRUPO/$INFODIR/pres${FORMAT_DEFAULT}"
-	else
-		if [ `isMissing "$INFODIR/pres"` == "true" ]
-			then
-				mkdir -p "$GRUPO/$INFODIR/pres"
-				echo -e "${FORMAT_BOLD_BLUE}$GRUPO/$INFODIR/pres${FORMAT_DEFAULT}"
-		fi
-fi
-
-if [ `isMissing "$RECHDIR"` == "true" ]
-	then
-		mkdir -p "$GRUPO/$RECHDIR"
-		echo -e "${FORMAT_BOLD_BLUE}$GRUPO/$RECHDIR${FORMAT_DEFAULT}"
-fi
-
-if [ `isMissing "$LOGDIR"` == "true" ]
-	then
-		mkdir -p "$GRUPO/$LOGDIR"
-		echo -e "${FORMAT_BOLD_BLUE}$GRUPO/$LOGDIR${FORMAT_DEFAULT}"
-fi
-echo ""
-
-echo -e "$TITLE_INSTALLING_MASTER_FILES_AND_TABLES"
-for FILE in "$GRUPO"/datos/*.mae "$GRUPO"/datos/*.tab
-do
-	if [ -f "$FILE" ]
-		then
-			"$MOVEBIN" "$FILE" "$GRUPO/$MAEDIR"
-	fi
-done
-
-echo -e "$TITLE_INSTALLING_PROGRAMS_AND_FUNCTIONS"
-for FILE in "$GRUPO"/*.sh "$GRUPO"/*.pl
-do
-	if [ -f "$FILE" -a "${FILE##*/}" != "Installer.sh" -a "${FILE##*/}" != "Mover.sh" ]
-		then
-			"$MOVEBIN" "$FILE" "$GRUPO/$BINDIR"
-	fi
-done
-
-if [ -f "$GRUPO/Mover.sh" ]
-	then
-		"$MOVEBIN" "$GRUPO/Mover.sh" "$GRUPO/$BINDIR"
-fi
-
-echo -e "$TITLE_UPDATING_SYSTEM_CONFIG"
-echo "GRUPO=$GRUPO=`timeStamp`" > "$CONFDIR/installer.conf"
-echo "CONFDIR=$CONFDIR=$USER=`timeStamp`" >> "$CONFDIR/installer.conf"
-echo "BINDIR=$BINDIR=$USER=`timeStamp`" >> "$CONFDIR/installer.conf"
-echo "MAEDIR=$MAEDIR=$USER=`timeStamp`" >> "$CONFDIR/installer.conf"
-echo "NOVEDIR=$NOVEDIR=$USER=`timeStamp`" >> "$CONFDIR/installer.conf"
-echo "DATASIZE=$DATASIZE=$USER=`timeStamp`" >> "$CONFDIR/installer.conf"
-echo "ACEPDIR=$ACEPDIR=$USER=`timeStamp`" >> "$CONFDIR/installer.conf"
-echo "INFODIR=$INFODIR=$USER=`timeStamp`" >> "$CONFDIR/installer.conf"
-echo "RECHDIR=$RECHDIR=$USER=`timeStamp`" >> "$CONFDIR/installer.conf"
-echo "LOGDIR=$LOGDIR=$USER=`timeStamp`" >> "$CONFDIR/installer.conf"
-echo "LOGEXT=$LOGEXT=$USER=`timeStamp`" >> "$CONFDIR/installer.conf"
-echo "LOGSIZE=$LOGSIZE=$USER=`timeStamp`" >> "$CONFDIR/installer.conf"
-echo "NUMSEC=0=$USER=`timeStamp`" >> "$CONFDIR/installer.conf"
-
-LOGBIN="$GRUPO/$BINDIR/Logging.sh"
-
-log "$INFO_INSTALLATION_COMPLETE" "$GRUPO/$CONFDIR/installer" "INFO" doEcho
+chmod +x "$GRUPO/ViewLog.sh"
 
 exit $SUCCESS
