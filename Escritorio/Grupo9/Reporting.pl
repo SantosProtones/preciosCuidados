@@ -269,7 +269,7 @@ sub getNumInfo{
 sub getFiltroSupers{
 	%filtroSupers=();
 	my %supers=getAllRealSupers();
-	printMenuSupers(3);
+	printMenuSupers(2);
 	my $opciones=<STDIN>;
 	my @opciones=split(" ",$opciones);
 	foreach $opcion(@opciones){
@@ -329,7 +329,7 @@ sub printMenuSupers{
 	my $cantCols=$_[0];
 	my $cont=0;
 	foreach $key( keys %supers){
-		pritnOnlyScreen($key . "_" . $supers{$key},"%-32s ");
+		pritnOnlyScreen($key . "_" . $supers{$key},"%-50s ");
 		#printf ("%-32s ",$key . "_" . $supers{$key});
 		$cont++;
 		my $resto=$cont % $cantCols;
