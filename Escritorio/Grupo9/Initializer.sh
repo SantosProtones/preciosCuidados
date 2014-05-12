@@ -6,6 +6,7 @@ actual=`pwd`
 export PATH=$PATH:$actual
 grupo=${actual%/*}
 CONFDIR="$grupo/conf"
+
 #
 
 #INIT=0 
@@ -27,7 +28,7 @@ then
 	ERRINST=2 #Nunca es alcanzado por la ejecucion
 	echo "No se encontro el directorio de configuracion. Revise su instalacion"
 else
-	if [ ! -r "$CONFDIR/installer.conf" ]
+	if [ ! -r "$CONFDIR/Installer.conf" ]
 	then 
 		ERRINST=2 
 		echo "No se encontro archivo de configuracion de la instalacion. Instale nuevamente"
@@ -36,7 +37,7 @@ else
 
 		if [ -z $GRUPO ]
 		then
-			GRUPO=`cat "$CONFDIR/installer.conf" | grep '^GRUPO=' | cut -f2 -d'='`
+			GRUPO=`cat "$CONFDIR/Installer.conf" | grep '^GRUPO=' | cut -f2 -d'='`
 			
 			if [ "$GRUPO" == "$grupo" ]
 			then
@@ -52,60 +53,60 @@ else
 
 		if [ -z $BINDIR ]
 		then
-			BINDIR=$GRUPO/`cat "$CONFDIR/installer.conf" | grep '^BINDIR=' | cut -f2 -d'='`
+			BINDIR=$GRUPO/`cat "$CONFDIR/Installer.conf" | grep '^BINDIR=' | cut -f2 -d'='`
 			#export BINDIR
 		fi
 
 		if [ -z $MAEDIR ]
 		then
-			MAEDIR=$GRUPO/`cat "$CONFDIR/installer.conf" | grep '^MAEDIR=' | cut -f2 -d'='`
+			MAEDIR=$GRUPO/`cat "$CONFDIR/Installer.conf" | grep '^MAEDIR=' | cut -f2 -d'='`
 			#export MAEDIR
 		fi
 
 		if [ -z $NOVEDIR ]
 		then
-			NOVEDIR=$GRUPO/`cat "$CONFDIR/installer.conf" | grep '^NOVEDIR=' | cut -f2 -d'='`
+			NOVEDIR=$GRUPO/`cat "$CONFDIR/Installer.conf" | grep '^NOVEDIR=' | cut -f2 -d'='`
 			#export NOVEDIR	
 		fi
 	
 		if [ -z $DATASIZE ]
 		then
-			DATASIZE=`cat "$CONFDIR/installer.conf" | grep '^DATASIZE=' | cut -f2 -d'='`
+			DATASIZE=`cat "$CONFDIR/Installer.conf" | grep '^DATASIZE=' | cut -f2 -d'='`
 			#export DATASIZE	
 		fi
 		if [ -z $ACEPDIR ]
 		then
-			ACEPDIR=$GRUPO/`cat "$CONFDIR/installer.conf" | grep '^ACEPDIR=' | cut -f2 -d'='`
+			ACEPDIR=$GRUPO/`cat "$CONFDIR/Installer.conf" | grep '^ACEPDIR=' | cut -f2 -d'='`
 			#export ACEPDIR		
 		fi
 
 		if [ -z $RECHDIR ]
 		then
-			RECHDIR=$GRUPO/`cat "$CONFDIR/installer.conf" | grep '^RECHDIR=' | cut -f2 -d'='`
+			RECHDIR=$GRUPO/`cat "$CONFDIR/Installer.conf" | grep '^RECHDIR=' | cut -f2 -d'='`
 			#export RECHDIR	
 		fi
 
 		if [ -z $INFODIR ]
 		then
-			INFODIR=$GRUPO/`cat "$CONFDIR/installer.conf" | grep '^INFODIR=' | cut -f2 -d'='`
+			INFODIR=$GRUPO/`cat "$CONFDIR/Installer.conf" | grep '^INFODIR=' | cut -f2 -d'='`
 			#export INFODIR	
 		fi
 
 		if [ -z $LOGDIR ]
 		then
-			LOGDIR=$GRUPO/`cat "$CONFDIR/installer.conf" | grep '^LOGDIR=' | cut -f2 -d'='`
+			LOGDIR=$GRUPO/`cat "$CONFDIR/Installer.conf" | grep '^LOGDIR=' | cut -f2 -d'='`
 			#export LOGDIR
 		fi
 	
 		if [ -z $LOGEXT ]
 		then
-			LOGEXT=`cat "$CONFDIR/installer.conf" | grep '^LOGEXT=' | cut -f2 -d'='`
+			LOGEXT=`cat "$CONFDIR/Installer.conf" | grep '^LOGEXT=' | cut -f2 -d'='`
 			#export LOGEXT	
 		fi
 
 		if [ -z $LOGSIZE ]
 		then	
-			LOGSIZE=`cat "$CONFDIR/installer.conf" | grep '^LOGSIZE=' | cut -f2 -d'='`	
+			LOGSIZE=`cat "$CONFDIR/Installer.conf" | grep '^LOGSIZE=' | cut -f2 -d'='`	
 			#export LOGSIZE
 		fi
 

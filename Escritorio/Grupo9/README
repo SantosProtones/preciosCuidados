@@ -1,3 +1,4 @@
+Instalacion
 _Insertar el dispositivo de almacenamiento con el paquete de instalacion
 _Posicionado en la ruta inicial /home/alumnos, ejecute "mkdir Desktop/Grupo09" para crear el directorio donde se realizara la instalacion(Segun el entorno puede ser Escritorio en lugar de Desktop). 
 _Luego ejecute en la consola "cd ../../". Habiendo realizdo esto, se deberia estar posicionado en el root. Luego ejecutar "cd media". En esta ubicacion tras ejecutar "ls" deberia poder ubicar el dispositivo flash suyo para luego posicionarse en la ubicacion donde esta el archivo de instalacion propiamente dicho. Para lograr esto, ejecutar "cd UUI/TpSis". Luego efectuar el copiado del archivo de instalacion ejecutando "cp ./Instalacion.tar.gz ~/Desktop/Grupo09".
@@ -7,10 +8,13 @@ _Luego de la descompresion y desempaquetamiento, deberian aparecer las carpetas 
 _Segun el entorno donde se desea ejecutar puede que al archivo Installer.sh le falten permisos de ejecución. Por ende ejecutar "chmod +x Installer.sh".
 _Posicionado en la carpeta Grupo09,ejecutar por linea de comando "./Installer.sh".
 _Terminada la instalacion default, los archivos ejecutables van a quedar en la carpeta bin, y los archivos maestros en mae.
+_Para ver el log de la Instalacion ejecutar "./ViewLog.sh ./conf/Installer.log".
+
+Uso de la aplicacion
 _Posicionarse en la carpeta de ejecutables, en el caso default ejecutando "cd bin", y ejecutar ". ./Initializer.sh"
 _Se puede elegir al correr el initializer si se desea arrancar el Listener o no.
 _Si se decide que no, el mismo se puede arrancar manualmente ejecutando "./Start.sh Listener.sh"
-_Con el listener corriendo se puede proceder a poner archivos de listas de compras y de precios en la carpeta arribos para ser procesados.
+_Con el listener corriendo se puede proceder a poner archivos de listas de compras y de precios en la carpeta arribos para ser procesados. Para esto se facilitaron archivos de prueba de lista de precios y de lista de compras. Para copiar los archivos de prueba de lista de precios a arribos se ejecuta "cp ../datos/Maestros/precios/*.* ../arribos". Para copiar los archivos de prueba de lista de compras a arribos se ejecuta "cp ../datos/aceptadas/*.* ../arribos". 
 _Si se desea detener el Listener se ejecuta el comando "./Stop.sh Listener.sh"
 _Una vez corrido el listener y habiendo puesto archivos a procesar con la consecuente generacion de presupuestos de listas de compras, se puede proceder a ejecutar el Reporting ejecutando "perl Reporting.pl [opciones]". Ej: "perl Reporting.pl -a","perl Reporting.pl -rm"
 
