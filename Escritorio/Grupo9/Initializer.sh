@@ -51,60 +51,60 @@ else
 
 		#CONFDIR=`cat "$CONFDIR/installer.conf" | grep '^CONFDIR=' | cut -f2 -d'='`
 
-		if [ -z $BINDIR ]
+		if [ -z "$BINDIR" ]
 		then
 			BINDIR=$GRUPO/`cat "$CONFDIR/Installer.conf" | grep '^BINDIR=' | cut -f2 -d'='`
 			#export BINDIR
 		fi
 
-		if [ -z $MAEDIR ]
+		if [ -z "$MAEDIR" ]
 		then
 			MAEDIR=$GRUPO/`cat "$CONFDIR/Installer.conf" | grep '^MAEDIR=' | cut -f2 -d'='`
 			#export MAEDIR
 		fi
 
-		if [ -z $NOVEDIR ]
+		if [ -z "$NOVEDIR" ]
 		then
 			NOVEDIR=$GRUPO/`cat "$CONFDIR/Installer.conf" | grep '^NOVEDIR=' | cut -f2 -d'='`
 			#export NOVEDIR	
 		fi
 	
-		if [ -z $DATASIZE ]
+		if [ -z "$DATASIZE" ]
 		then
 			DATASIZE=`cat "$CONFDIR/Installer.conf" | grep '^DATASIZE=' | cut -f2 -d'='`
 			#export DATASIZE	
 		fi
-		if [ -z $ACEPDIR ]
+		if [ -z "$ACEPDIR" ]
 		then
 			ACEPDIR=$GRUPO/`cat "$CONFDIR/Installer.conf" | grep '^ACEPDIR=' | cut -f2 -d'='`
 			#export ACEPDIR		
 		fi
 
-		if [ -z $RECHDIR ]
+		if [ -z "$RECHDIR" ]
 		then
 			RECHDIR=$GRUPO/`cat "$CONFDIR/Installer.conf" | grep '^RECHDIR=' | cut -f2 -d'='`
 			#export RECHDIR	
 		fi
 
-		if [ -z $INFODIR ]
+		if [ -z "$INFODIR" ]
 		then
 			INFODIR=$GRUPO/`cat "$CONFDIR/Installer.conf" | grep '^INFODIR=' | cut -f2 -d'='`
 			#export INFODIR	
 		fi
 
-		if [ -z $LOGDIR ]
+		if [ -z "$LOGDIR" ]
 		then
 			LOGDIR=$GRUPO/`cat "$CONFDIR/Installer.conf" | grep '^LOGDIR=' | cut -f2 -d'='`
 			#export LOGDIR
 		fi
 	
-		if [ -z $LOGEXT ]
+		if [ -z "$LOGEXT" ]
 		then
 			LOGEXT=`cat "$CONFDIR/Installer.conf" | grep '^LOGEXT=' | cut -f2 -d'='`
 			#export LOGEXT	
 		fi
 
-		if [ -z $LOGSIZE ]
+		if [ -z "$LOGSIZE" ]
 		then	
 			LOGSIZE=`cat "$CONFDIR/Installer.conf" | grep '^LOGSIZE=' | cut -f2 -d'='`	
 			#export LOGSIZE
