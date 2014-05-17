@@ -96,16 +96,24 @@ else
 							if [ $fecha_novedad -gt '20140101' ]; then
 								if [ $fecha_novedad -le $fecha_actual ]; then
 # 3.b.c Validación de usuario colaborador
-									asociado=`echo $novedad | cut -d'.' -f2`	
-									existe_asociado=`cat $asociados | grep -e "^[^;]*;[^;]*;$asociado;1;*[^;]*$" | wc -l`	
-									if [ $existe_asociado -gt 0 ]; then	
-										mensaje="Archivo $novedad aceptado. Es lista de Precios"
-										`"$BINDIR/Logging.sh" "Listener" "$mensaje" "INFO"`
-										`"$BINDIR/Mover.sh" "$NOVEDIR/$novedad" "$MAEDIR/precios" "Listener"`	
-#										echo $novedad "es lista de precios, mover archivo a MAEDIR/precios"
-										continue
+									asociado=`echo $novedad | cut -d'.' -f2`						
+									existe_asociado=`cat $asociados | grep -e "^[^;]*;[^;]*;$asociado;[^;]*;*[^;]*$" | wc -l`	
+	
+									if [ $existe_asociado -gt 0 ]; then
+										es_colaborador=`cat $asociados | grep -e "^[^;]*;[^;]*;$asociado;1;*[^;]*$" | wc -l`
+										if [ $es_colaborador -gt 0 ]; then	
+											mensaje="Archivo $novedad aceptado. Es lista de Precios"
+											`"$BINDIR/Logging.sh" "Listener" "$mensaje" "INFO"`
+											`"$BINDIR/Mover.sh" "$NOVEDIR/$novedad" "$MAEDIR/precios" "Listener"`	
+											continue
+										else
+											mensaje="Archivo $novedad rechazado. Usuario no es colaborador"
+											`"$BINDIR/Logging.sh" "Listener" "$mensaje" "ERR"`
+											`"$BINDIR/Mover.sh" "$NOVEDIR/$novedad" "$RECHDIR" "Listener"`
+											continue
+										fi
 									else
-										mensaje="Archivo $novedad rechazado. Usuario inexistente o no es colaborador"
+										mensaje="Archivo $novedad rechazado. Usuario inexistente"
 										`"$BINDIR/Logging.sh" "Listener" "$mensaje" "ERR"`
 										`"$BINDIR/Mover.sh" "$NOVEDIR/$novedad" "$RECHDIR" "Listener"`
 										continue
