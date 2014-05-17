@@ -49,7 +49,7 @@ else
 # 1. Grabar en el Log el nro de ciclo.
 		loop=`expr $loop+1 | bc`
 		mensaje="PID Listener: $pid_listener Ciclo $loop Hora: $(date +%T)" 	
-		`$BINDIR/Logging.sh "Listener" "$mensaje" "INFO"`
+		`"$BINDIR/Logging.sh" "Listener" "$mensaje" "INFO"`
 
 # 2. Chequear si hay archivos en el directorio $NOVEDIR
 		cantidad_novedades=`ls "$NOVEDIR/" -F | grep -e "[^/]$" | wc -l`
@@ -67,8 +67,8 @@ else
 						file "$NOVEDIR/$novedad" | grep -e "empty" > /dev/null
 						if [ $? -ne 0 ]; then
 							mensaje="Archivo $novedad rechazado. Tipo de archivo Invalido"
-							`$BINDIR/Logging.sh "Listener" "$mensaje" "ERR"`
-							`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$RECHDIR" "Listener"`
+							`"$BINDIR/Logging.sh" "Listener" "$mensaje" "ERR"`
+							`"$BINDIR/Mover.sh" "$NOVEDIR/$novedad" "$RECHDIR" "Listener"`
 #   						echo $novedad "no es un archivo valido, mover archivo a RECHDIR. Tipo de archivo Invalido"
 						continue
 						fi
@@ -100,33 +100,33 @@ else
 									existe_asociado=`cat $asociados | grep -e "^[^;]*;[^;]*;$asociado;1;*[^;]*$" | wc -l`	
 									if [ $existe_asociado -gt 0 ]; then	
 										mensaje="Archivo $novedad aceptado. Es lista de Precios"
-										`$BINDIR/Logging.sh "Listener" "$mensaje" "INFO"`
-										`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$MAEDIR/precios" "Listener"`	
+										`"$BINDIR/Logging.sh" "Listener" "$mensaje" "INFO"`
+										`"$BINDIR/Mover.sh" "$NOVEDIR/$novedad" "$MAEDIR/precios" "Listener"`	
 #										echo $novedad "es lista de precios, mover archivo a MAEDIR/precios"
 										continue
 									else
 										mensaje="Archivo $novedad rechazado. Usuario inexistente o no es colaborador"
-										`$BINDIR/Logging.sh "Listener" "$mensaje" "ERR"`
-										`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$RECHDIR" "Listener"`
+										`"$BINDIR/Logging.sh" "Listener" "$mensaje" "ERR"`
+										`"$BINDIR/Mover.sh" "$NOVEDIR/$novedad" "$RECHDIR" "Listener"`
 										continue
 									fi
 								else
 									mensaje="Archivo $novedad rechazado. Fecha invalida"
-									`$BINDIR/Logging.sh "Listener" "$mensaje" "ERR"`
-									`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$RECHDIR" "Listener"`
+									`"$BINDIR/Logging.sh" "Listener" "$mensaje" "ERR"`
+									`"$BINDIR/Mover.sh" "$NOVEDIR/$novedad" "$RECHDIR" "Listener"`
 									continue
 								fi				
 								
 							else									
 								mensaje="Archivo $novedad rechazado. Fecha invalida"
-								`$BINDIR/Logging.sh "Listener" "$mensaje" "ERR"`
-								`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$RECHDIR" "Listener"`								
+								`"$BINDIR/Logging.sh" "Listener" "$mensaje" "ERR"`
+								`"$BINDIR/Mover.sh" "$NOVEDIR/$novedad" "$RECHDIR" "Listener"`								
 								continue
 							fi
 						else
 							mensaje="Archivo $novedad rechazado. Fecha invalida"
-							`$BINDIR/Logging.sh "Listener" "$mensaje" "ERR"`
-							`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$RECHDIR" "Listener"`								
+							`"$BINDIR/Logging.sh" "Listener" "$mensaje" "ERR"`
+							`"$BINDIR/Mover.sh" "$NOVEDIR/$novedad" "$RECHDIR" "Listener"`								
 							continue
 						fi
 					fi
@@ -146,29 +146,29 @@ else
 						if [ $existe_asociado -eq 1 ];then
 							
 							mensaje="Archivo $novedad aceptado. Es lista de Compras"
-							`$BINDIR/Logging.sh "Listener" "$mensaje" "INFO"`
-							`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$ACEPDIR" "Listener"`
+							`"$BINDIR/Logging.sh" "Listener" "$mensaje" "INFO"`
+							`"$BINDIR/Mover.sh" "$NOVEDIR/$novedad" "$ACEPDIR" "Listener"`
 #							echo $novedad "es lista de compras, mover archivo a ACEPDIR"
 							continue
 						else
 	
 							mensaje="Archivo $novedad rechazado. Asociado inexistente"
-							`$BINDIR/Logging.sh "Listener" "$mensaje" "ERR"`
-							`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$RECHDIR" "Listener"`		
+							`"$BINDIR/Logging.sh" "Listener" "$mensaje" "ERR"`
+							`"$BINDIR/Mover.sh" "$NOVEDIR/$novedad" "$RECHDIR" "Listener"`		
 #							echo $novedad "no es un archivo valido, mover archivo a RECHDIR. Asociado inexistente"
 							continue 					
 						fi
 					fi
  					mensaje="Archivo $novedad rechazado. Nombre del archivo con formato invalido"
-					`$BINDIR/Logging.sh "Listener" "$mensaje" "ERR"`
-					`$BINDIR/Mover.sh "$NOVEDIR/$novedad" "$RECHDIR" "Listener"`				
+					`"$BINDIR/Logging.sh" "Listener" "$mensaje" "ERR"`
+					`"$BINDIR/Mover.sh" "$NOVEDIR/$novedad" "$RECHDIR" "Listener"`				
 #					echo $novedad "no es un archivo valido, mover archivo a RECHDIR. Nombre del archivo con formato invalido"	
 				done
 
 			IFS=$SAVEIFS
 		else
 			mensaje="No hay archivos en la carpeta arribos"
-			`$BINDIR/Logging.sh "Listener" "$mensaje" "WAR"`				
+			`"$BINDIR/Logging.sh" "Listener" "$mensaje" "WAR"`				
 #			echo "No hay archivos en la carpeta arribos"
 		fi
 		
@@ -189,19 +189,19 @@ else
 			if [ $flagM -eq 0 ]; then 
 				if [ $flagR -eq 0 ]; then
 					
-					eval "`($BINDIR/Masterlist.sh)`" &
+					`"$BINDIR/Masterlist.sh"` &
 #					pid_masterlist=`./GetPID.sh "Masterlist.sh"`
 #					pid_masterlist=`ps -e | grep -e 'Masterlist.sh$' | awk '{ print $1 }'`
 					pid_masterlist=$!
 					mensaje="PID De MasterList Lanzado: $pid_masterlist"
-					`$BINDIR/Logging.sh "Listener" "$mensaje" "INFO"`
+					`"$BINDIR/Logging.sh" "Listener" "$mensaje" "INFO"`
 				else
 					mensaje="Masterlist.sh no se ejecutó. El proceso Rating.sh se esta ejecutando"										
-					`$BINDIR/Logging.sh "Listener" "$mensaje" "ERR"`
+					`"$BINDIR/Logging.sh" "Listener" "$mensaje" "ERR"`
 				fi
 			else
 				mensaje="El proceso MasterList.sh ya está ejecutándose"
-				`$BINDIR/Logging.sh "Listener" "$mensaje" "ERR"`
+				`"$BINDIR/Logging.sh" "Listener" "$mensaje" "ERR"`
 			fi
 
 		fi
@@ -223,18 +223,18 @@ else
 # 8.b. Chequea de que ningun proceso este en ejecución
 			if [ $flagR -eq 0 ]; then
 				if [ $flagM -eq 0 ]; then 
-					eval "`$BINDIR/Rating.sh`" &
+					`"$BINDIR/Rating.sh"` &
  					#pid_rating=`ps -e | grep -e 'Rating.sh$' | awk '{ print $1 }'`
  					pid_rating=$!
 					mensaje="PID De Rating Lanzado: $pid_rating"
-					`$BINDIR/Logging.sh "Listener" "$mensaje" "INFO"`
+					`"$BINDIR/Logging.sh" "Listener" "$mensaje" "INFO"`
 				else
 					mensaje="Rating.sh no se ejecutó. El proceso Masterlist.sh se esta ejecutándo"
-					`$BINDIR/Logging.sh "Listener" "$mensaje" "ERR"`
+					`"$BINDIR/Logging.sh" "Listener" "$mensaje" "ERR"`
 				fi
 			else
 				mensaje="El proceso Rating.sh ya está ejecutándose"
-				`$BINDIR/Logging.sh "Listener" "$mensaje" "ERR"`				
+				`"$BINDIR/Logging.sh" "Listener" "$mensaje" "ERR"`				
 			fi									
 		fi
 

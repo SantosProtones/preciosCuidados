@@ -4,13 +4,13 @@
 #Obtengo la cantidad de listas de precios a procesar
 Cant_Listas=`find "$MAEDIR/precios" -maxdepth 1 -type f | wc -l`
 
-`$BINDIR/Logging.sh Masterlist "Inicio de Masterlist" INFO`
-`$BINDIR/Logging.sh Masterlist "Cantidad de Listas de precios a procesar: $Cant_Listas" INFO`
+`"$BINDIR/Logging.sh" Masterlist "Inicio de Masterlist" INFO`
+`"$BINDIR/Logging.sh" Masterlist "Cantidad de Listas de precios a procesar: $Cant_Listas" INFO`
 
 #Si la lista maestra de precios no existe la creo
 if [ ! -f "$MAEDIR/precios.mae" ]
 then
-touch $MAEDIR/precios.mae
+touch "$MAEDIR/precios.mae"
 fi
 
 #Recorro las listas de precios
@@ -18,15 +18,15 @@ IFS=$'\n'
 for PathListaDePrecios in `find "$MAEDIR/precios" -maxdepth 1 -type f`
 do
 ListaDePrecios=${PathListaDePrecios##*/}
-    `$BINDIR/Logging.sh Masterlist "Archivo a procesar: $ListaDePrecios" INFO`
+    `"$BINDIR/Logging.sh" Masterlist "Archivo a procesar: $ListaDePrecios" INFO`
      
     #Verifico que no exista el archivo
     if [ -f "$MAEDIR/precios/proc/$ListaDePrecios" ]
     then
         #Si esta duplicado lo muevo a RECHDIR
-`$BINDIR/Mover.sh "$MAEDIR/precios/$ListaDePrecios" "$RECHDIR"`
+`"$BINDIR/Mover.sh" "$MAEDIR/precios/$ListaDePrecios" "$RECHDIR"`
 #Logueo la causa del archivo rechazado
-`$BINDIR/Logging.sh Masterlist "Se rechaza el archivo por estar duplicado" WAR`
+`"$BINDIR/Logging.sh" Masterlist "Se rechaza el archivo por estar duplicado" WAR`
 else
 #Valido el registro cabecera
 Nombre_Super=`head -1 "$MAEDIR/precios/$ListaDePrecios" | cut -f1 -d';'`
@@ -46,42 +46,42 @@ Registro_Email_Colab=`grep "^[^;]*;[^;]*;[^;]*;[^;]*;$Email_Colab" "$MAEDIR/asoc
 if [ -z $Super_Id ]
 then
 #Muevo el archivo a RECHDIR
-`$BINDIR/Mover.sh "$MAEDIR/precios/$ListaDePrecios" "$RECHDIR"`
+`"$BINDIR/Mover.sh" "$MAEDIR/precios/$ListaDePrecios" "$RECHDIR"`
 #Logueola causa el archivo rechazado
-`$BINDIR/Logging.sh Masterlist "Se rechaza el archivo por Supermercado inexistente" WAR`
+`"$BINDIR/Logging.sh" Masterlist "Se rechaza el archivo por Supermercado inexistente" WAR`
 
 #Verifico que la cantidad de campos no sea menor a 1
 elif [ $Cant_Campos -le 1 ]
 then
 #Muevo el archivo a RECHDIR
-`$BINDIR/Mover.sh "$MAEDIR/precios/$ListaDePrecios" "$RECHDIR"`
+`"$BINDIR/Mover.sh" "$MAEDIR/precios/$ListaDePrecios" "$RECHDIR"`
 #Logueo la causa del archivo rechazado
-`$BINDIR/Logging.sh Masterlist "Se rechaza el archivo por Cantidad de campos inválida" WAR`
+`"$BINDIR/Logging.sh" Masterlist "Se rechaza el archivo por Cantidad de campos inválida" WAR`
 
 #Verifico que la ubicacion del producto no sea menor o igual a cero y mayor que la cantidad de campos
 elif [ $Ubic_Producto -le 0 -o $Ubic_Producto -gt $Cant_Campos ]
 then
 #Muevo el archivo a RECHDIR
-`$BINDIR/Mover.sh "$MAEDIR/precios/$ListaDePrecios" "$RECHDIR"`
+`"$BINDIR/Mover.sh" "$MAEDIR/precios/$ListaDePrecios" "$RECHDIR"`
   #Logueo la causa del archivo rechazado
-`$BINDIR/Logging.sh Masterlist "Se rechaza el archivo por Posición producto inválida" WAR`
+`"$BINDIR/Logging.sh" Masterlist "Se rechaza el archivo por Posición producto inválida" WAR`
 
 #Verifico que la ubicacion del precio no sea menor o igual a cero,
 #mayor que la cantidad de campos y distinto de la ubicacion del producto
 elif [ $Ubic_Precio -le 0 -o $Ubic_Precio -gt $Cant_Campos -o $Ubic_Precio -eq $Ubic_Producto ]
 then
 #Muevo el archivo a RECHDIR
-`$BINDIR/Mover.sh "$MAEDIR/precios/$ListaDePrecios" "$RECHDIR"`
+`"$BINDIR/Mover.sh" "$MAEDIR/precios/$ListaDePrecios" "$RECHDIR"`
   #Logueo la causa del archivo rechazado
-`$BINDIR/Logging.sh Masterlist "Se rechaza el archivo por Posición precio inválida" WAR`
+`"$BINDIR/Logging.sh" Masterlist "Se rechaza el archivo por Posición precio inválida" WAR`
 
 #Verifico que el registro email colaborador no este vacio
 elif [ -z $Registro_Email_Colab ]
 then
 #Muevo el archivo a RECHDIR
-`$BINDIR/Mover.sh "$MAEDIR/precios/$ListaDePrecios" "$RECHDIR"`
+`"$BINDIR/Mover.sh" "$MAEDIR/precios/$ListaDePrecios" "$RECHDIR"`
   #Logueo la causa del archivo rechazado
-`$BINDIR/Logging.sh Masterlist "Se rechaza el archivo por Correo electrónico del colaborador inválido" WAR`
+`"$BINDIR/Logging.sh" Masterlist "Se rechaza el archivo por Correo electrónico del colaborador inválido" WAR`
 
 else
 #Si llego hasta aca paso todas las validaciones
@@ -122,22 +122,22 @@ sed "/^$Super_Id;$Usuario;$Fecha_Lista_Maestra;.*/d" "$MAEDIR/precios.mae.bak" >
 rm "$MAEDIR/precios.mae.bak"
 
                     #Logueo los registros eliminados
-`$BINDIR/Logging.sh "Masterlist" "Cantidad de registro eliminados: $Reg_eliminados" INFO`
+`"$BINDIR/Logging.sh" "Masterlist" "Cantidad de registro eliminados: $Reg_eliminados" INFO`
 
 else
 #Si la fecha no es mas reciente se rechaza el archivo
 
 #Muevo el archivo a RECHDIR
-`$BINDIR/Mover.sh "$MAEDIR/precios/$ListaDePrecios" "$RECHDIR"`
+`"$BINDIR/Mover.sh" "$MAEDIR/precios/$ListaDePrecios" "$RECHDIR"`
   #Logueo la causa del archivo rechazado
-`$BINDIR/Logging.sh Masterlist "Se rechaza el archivo por fecha anterior a la existente" WAR`
+`"$BINDIR/Logging.sh" Masterlist "Se rechaza el archivo por fecha anterior a la existente" WAR`
 #Salteo a la proxima lista de precios
 continue
 fi
 fi
 
 #Grabo los nuevos registros
-sed 1d $MAEDIR/precios/$ListaDePrecios | ( while read -r Reg_Precio
+sed 1d "$MAEDIR/precios/$ListaDePrecios" | ( while read -r Reg_Precio
 do	
 #Obtengo el producto
 Producto=`echo $Reg_Precio | cut -f$Ubic_Producto -d';'`
@@ -184,15 +184,15 @@ fi
 done
 
 #Muevo el archivo que se acabo de procesar
-`$BINDIR/Mover.sh "$MAEDIR/precios/$ListaDePrecios" "$MAEDIR/precios/proc"`
+`"$BINDIR/Mover.sh" "$MAEDIR/precios/$ListaDePrecios" "$MAEDIR/precios/proc"`
 
 #Logueo la cantidad de registros ok
-`$BINDIR/Logging.sh "Masterlist" "Cantidad de registros ok: $Reg_ok" INFO`
+`"$BINDIR/Logging.sh" "Masterlist" "Cantidad de registros ok: $Reg_ok" INFO`
 #Logueo la cantidad de registros nok
-`$BINDIR/Logging.sh "Masterlist" "Cantidad de registros nok: $Reg_nok" INFO` )
+`"$BINDIR/Logging.sh" "Masterlist" "Cantidad de registros nok: $Reg_nok" INFO` )
 fi
 fi
 done
 
 #Logueo el fin
-`$BINDIR/Logging.sh "Masterlist" "Fin de Masterlist" INFO`
+`"$BINDIR/Logging.sh" "Masterlist" "Fin de Masterlist" INFO`

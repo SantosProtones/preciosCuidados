@@ -269,33 +269,35 @@ function printFilesInDir() {
 
 function readConf() {
 	local propertyName=""
+	local propertyValue=""
 
 	exec 3< "$installerConfigFile"
 	while read line
 	do
-		propertyName=`echo $line | cut -f2 -d"="`
+		propertyName=`echo $line | cut -f1 -d"="`
+		propertyValue=`echo $line | cut -f2 -d"="`
 
 		case "$propertyName" in
 			"BINDIR")
-				BINDIR="$propertyName";;
+				BINDIR="$propertyValue";;
 			"MAEDIR")
-				MAEDIR="$propertyName";;
+				MAEDIR="$propertyValue";;
 			"NOVEDIR")
-				NOVEDIR="$propertyName";;
+				NOVEDIR="$propertyValue";;
 			"DATASIZE")
-				DATASIZE="$propertyName";;
+				DATASIZE="$propertyValue";;
 			"ACEPDIR")
-				ACEPDIR="$propertyName";;
+				ACEPDIR="$propertyValue";;
 			"INFODIR")
-				INFODIR="$propertyName";;
+				INFODIR="$propertyValue";;
 			"RECHDIR")
-				RECHDIR="$propertyName";;
+				RECHDIR="$propertyValue";;
 			"LOGDIR")
-				LOGDIR="$propertyName";;
+				LOGDIR="$propertyValue";;
 			"LOGEXT")
-				LOGEXT="$propertyName";;
+				LOGEXT="$propertyValue";;
 			"LOGSIZE")
-				LOGSIZE="$propertyName";;
+				LOGSIZE="$propertyValue";;
 		esac
 	done <&3
 
@@ -610,8 +612,8 @@ function checkTermsAndConditions() {
 }
 
 function checkPerlVersion() {
-	perlVersion=`perl --version | grep \(v`
-	perlVersion=${perlVersion:43:1}
+	perlVersion=`perl --version | grep v`
+	perlVersion=${perlVersion:15:1}
 	
 	if [ $perlVersion -lt $minPerlVersionAllowed ]
 		then
@@ -663,8 +665,15 @@ function getDirectoryNames() {
 							askForSize "Defina espacio mínimo libre para el arribo de novedades en Mbytes (${boldBlue}$DATASIZE${default}): " "$DATASIZE"
 							log "Defina espacio mínimo libre para el arribo de novedades en Mbytes (${boldBlue}$DATASIZE${default}): ${bold}$size${default}" "INFO"
 						else
-							DATASIZE=$size
-							break
+							if [ $size -gt 0 ]
+								then
+									DATASIZE=$size
+									break
+								else
+									log "\nEl tamaño elegido debe ser mayor que ${boldBlue}0${default} Mb.\nCancele la instalación o inténtelo nuevamente." "INFO" doEcho
+									askForSize "Defina espacio mínimo libre para el arribo de novedades en Mbytes (${boldBlue}$DATASIZE${default}): " "$DATASIZE"
+									log "Defina espacio mínimo libre para el arribo de novedades en Mbytes (${boldBlue}$DATASIZE${default}): ${bold}$size${default}" "INFO"
+							fi
 					fi
 				done
 		fi

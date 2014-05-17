@@ -1,3 +1,4 @@
+#!/bin/bash
 # Comando Rating
 # Autor: Cristian Delle Piane (86450)
 # Fecha: 27 - 04 - 2014
@@ -16,26 +17,15 @@
 #	Archivos rechazados $RECHDIR/usuario.xxx
 # 	Log $LOGDIR/Rating.$LOGEXT
 #
-# Parametros
-#       $ACEPDIR=$1
-#       $MAEDIR=$2
-#       $INFODIR=$3
-#       $RECHDIR=$4
-#
-# -----------------------Definicion de variables----------------------------
-#ACEPDIR=$1
-#MAEDIR=$2
-#INFODIR=$3
-#RECHDIR=$4
-
 # -----------------------Definicion de constantes---------------------------
 MLOGINI1="Inicio de Rating"
 MLOGINI2="Cantidad de listas de compras a procesar: "
 MLOGFIN="Fin de Rating"
 MPROC="Archivo a procesar: "
-MERRDUP="Se rechaza el archivo por estar DUPLICADO"
-MERRINV="Se rechaza el archivo por formato INVALIDO"
-MERRVAC="Se rechaza el archivo por estar vacio"
+MERRGEN="Se rechaza el archivo"
+MERRDUP="por estar DUPLICADO"
+MERRINV="por formato INVALIDO"
+MERRVAC="por estar vacio"
 FLPMAE="precios.mae"
 TABEQU="um.tab"
 COMANDO="Rating"
@@ -72,7 +62,7 @@ function ValidarParametros () {
     fi
 
     # Valido que los directorios sean validos
-    if ! [ -d $1 ]; then 
+    if ! [ -d "$1" ]; then 
         MENSERR="Parametro 1 no es un directorio valido. Valor: $1"
         RTA=2 
     fi
@@ -82,12 +72,12 @@ function ValidarParametros () {
         RTA=2 
     fi
     
-    if ! [ -d $2 ]; then 
+    if ! [ -d "$2" ]; then 
         MENSERR="Parametro 2 no es un directorio valido. Valor: $2"
         RTA=2 
     fi
     
-    if ! [ -d $3 ]; then 
+    if ! [ -d "$3" ]; then 
         MENSERR="Parametro 3 no es un directorio valido. Valor: $3"
         RTA=2 
     fi
@@ -97,7 +87,7 @@ function ValidarParametros () {
         RTA=2 
     fi
     
-    if ! [ -d $4 ]; then 
+    if ! [ -d "$4" ]; then 
         MENSERR="Parametro 4 no es un directorio valido. Valor: $4"
         RTA=2 
     fi
@@ -123,7 +113,7 @@ function ContarArchivos () {
  
 function ExisteArchivo () {
     # Tomo el nombre del archivo de la ruta actual
-    local NUMARCH=`find $2 -name $1 | wc -l`
+    local NUMARCH=`find "$2" -name "$1" | wc -l`
     if [ $NUMARCH -eq 0 ]; then
        return 1
     fi
@@ -166,7 +156,7 @@ function PresupuestarPedido () {
     # Creo el comando para filtrar los registros
     # solo los que contengan todas las palabras
     local GREP="| grep -n -w -i"
-    local COMAND="cat $2"
+    local COMAND="cat \"$2\""
     for PALABRA in ${VWORDS[*]}
     do
         local ULTPOS=${VWORDS[${#VWORDS[@]} - 1]}
@@ -190,11 +180,11 @@ function PresupuestarPedido () {
       local VWORDSP=(${VFIELDS[3]})
       if [ ${VWORDS[${#VWORDS[@]} - 2]} == ${VWORDSP[${#VWORDSP[@]} - 2]} ]; then
           if [ $4 == `echo ${VWORDS[${#VWORDS[@]} - 1]} | tr '[:upper:]' '[:lower:]'` ]; then
-            echo $REG >> $3
+            echo $REG >> "$3"
           else
             local POSUNID=`ExisteUnidad ${VWORDS[${#VWORDS[@]} - 1]}`
             if [ $POSUNID -eq $5 ]; then
-                echo $REG >> $3
+                echo $REG >> "$3"
             fi   
           fi
       fi
@@ -204,7 +194,7 @@ function PresupuestarPedido () {
     IFS=$SAVE
 
     if [ $FLAG -eq 0 ]; then
-      echo $1 >> $3 
+      echo "$1" >> "$3" 
     fi
 }
 
@@ -216,79 +206,80 @@ function PresupuestarPedido () {
 # Valida que los parametros esten informados y sean consistentes
 ERROR=`ValidarParametros "$ACEPDIR" "$MAEDIR" "$INFODIR" "$RECHDIR"`
 if [ $? -ne 0 ]; then
-    `$PWD/Logging.sh "$COMANDO" "$ERROR" "ERR"`
-    `$PWD/Logging.sh "$COMANDO" "$MLOGFIN" "INFO"`
+    `"$BINDIR/Logging.sh" "$COMANDO" "$ERROR" "ERR"`
+    `"$BINDIR/Logging.sh" "$COMANDO" "$MLOGFIN" "INFO"`
     exit 1
 fi
 
 # Logueo mensaje inicial de Rating
-`$PWD/Logging.sh "$COMANDO" "$MLOGINI1" "INFO"`
+`"$BINDIR/Logging.sh" "$COMANDO" "$MLOGINI1" "INFO"`
 
 NUMACEP=`ContarArchivos "$ACEPDIR"`
 
 # Logueo el numero de archivos a presupuestar
-`$PWD/Logging.sh "$COMANDO" "$MLOGINI2 $NUMACEP" "INFO"`
+`"$BINDIR/Logging.sh" "$COMANDO" "$MLOGINI2 $NUMACEP" "INFO"`
 
 # Sino hay listas de compras por procesar termine
 if [ $NUMACEP -eq 0 ]; then
     ERRORLP="No hay listas a presupuestar en $ACEPDIR"
-    `$PWD/Logging.sh "$COMANDO" "$ERRORLP" "ERR"`
-    `$PWD/Logging.sh "$COMANDO" "$MLOGFIN" "INFO"`
+    `"$BINDIR/Logging.sh" "$COMANDO" "$ERRORLP" "ERR"`
+    `"$BINDIR/Logging.sh" "$COMANDO" "$MLOGFIN" "INFO"`
     exit 2
 else	    
     `ExisteArchivo "$FLPMAE" "$MAEDIR/"`
         
     # Si no existe la lista maestra de precios finalizo
     if [ $? -ne 0 ]; then
-	ERRORLPRE="En $MAEDIR no existe lista de precios maestra $FLPMAE"
-	`$PWD/Logging.sh "$COMANDO" "$ERRORLPRE" "ERR"`
-        `$PWD/Logging.sh "$COMANDO" "$MLOGFIN" "INFO"`
-	exit 3
+	    ERRORLPRE="En $MAEDIR no existe lista de precios maestra $FLPMAE"
+	    `"$BINDIR/Logging.sh" "$COMANDO" "$ERRORLPRE" "ERR"`
+        `"$BINDIR/Logging.sh" "$COMANDO" "$MLOGFIN" "INFO"`
+	    exit 3
     fi
     
     `ExisteArchivo "$TABEQU" "$MAEDIR/"`
         
     # Si no existe el archivo de equivalencias finalizo
     if [ $? -ne 0 ]; then
-	ERRORLEQ="En $MAEDIR no existe el archivo de equivalencias $TABEQU"
-	`$PWD/Logging.sh "$COMANDO" "$ERRORLEQ" "ERR"`
-        `$PWD/Logging.sh "$COMANDO" "$MLOGFIN" "INFO"`
-	exit 4
+	    ERRORLEQ="En $MAEDIR no existe el archivo de equivalencias $TABEQU"
+	    `"$BINDIR/Logging.sh" "$COMANDO" "$ERRORLEQ" "ERR"`
+        `"$BINDIR/Logging.sh" "$COMANDO" "$MLOGFIN" "INFO"`
+	    exit 4
     fi
     
     # Creo un vector con los registros de unidades
     for REG in `cat "$MAEDIR/$TABEQU"`
     do	
-	LOWREG=`echo $REG | tr [:upper:] [:lower:]`
+	    LOWREG=`echo $REG | tr [:upper:] [:lower:]`
         VREGUNIDS[${#VREGUNIDS[@]}]="$LOWREG;"
     done
 
     # Recupero las listas de comparas a procesar
-    LISTTEMP=($(ls "$ACEPDIR/"*.* -1))
-        
-    for ARCHIVO in ${LISTTEMP[*]}
+    SAVEIFS=$IFS
+    IFS=$'\n'
+    for ARCHIVO in `find "$ACEPDIR" -maxdepth 1 -type f`
     do
+        IFS=$SAVEIFS
         # Logueo la lista a presupuestar
-        `$PWD/Logging.sh "$COMANDO" "$MPROC $ARCHIVO" "INFO"`
+        `"$BINDIR/Logging.sh" "$COMANDO" "$MPROC $ARCHIVO" "INFO"`
         
         # Chequeo que no se haya procesado aun el archivo
-        `ExisteArchivo "${ARCHIVO##*/}" "${ACEPDIR}/proc/"`
+        `ExisteArchivo "${ARCHIVO##*/}" "$ACEPDIR/proc/"`
 	    
 	    if [ $? -eq 0 ]; then
-            `$PWD/Logging.sh "$COMANDO" "$MERRDUP" "ERR"`
-            `$PWD/Mover.sh "$ARCHIVO" "$RECHDIR/" "$COMANDO"`
+            `"$BINDIR/Logging.sh" "$COMANDO" "$MERRGEN $ARCHIVO $MERRDUP" "ERR"`
+            `"$BINDIR/Mover.sh" "$ARCHIVO" "$RECHDIR/" "$COMANDO"`
         else	 
             # Valida que el archivo lista de compra sea valido
 	        if ! [ -s "$ARCHIVO" ]; then
 		        # Error de validacion se mueve archivo a rechazados
-		        `$PWD/Logging.sh "$COMANDO" "$MERRVAC" "ERR"`
-                `$PWD/Mover.sh "$ARCHIVO" "$RECHDIR/" "$COMANDO"`
+		        `"$BINDIR/Logging.sh" "$COMANDO" "$MERRGEN $ARCHIVO $MERRVAC" "ERR"`
+                `"$BINDIR/Mover.sh" "$ARCHIVO" "$RECHDIR/" "$COMANDO"`
             else
-		        INFOTEMP="${INFODIR}/pres/${ARCHIVO##*/}"
+		        INFOTEMP="$INFODIR/pres/${ARCHIVO##*/}"
 		        HAYERROR=0
-	            SAVEIFS=$IFS
+	            # Recorro los productos solicitados en la lista de compras
 	            IFS=$'\n'
-	            for REGPROD in `< $ARCHIVO`
+	            for REGPROD in `< "$ARCHIVO"`
 		        do
 		            IFS=$SAVEIFS
 		            # Verifica la validez del registro
@@ -307,7 +298,7 @@ else
 		            
 		            # Si no hay errores en el registro a procesar busco precio
 		            if [ $HAYERROR -ne 1 ]; then
-		                `PresupuestarPedido "$REGPROD" "${MAEDIR}/$FLPMAE" "$INFOTEMP" $UNIDP $POSUNID`
+		                `PresupuestarPedido "$REGPROD" "$MAEDIR/$FLPMAE" "$INFOTEMP" $UNIDP $POSUNID`
 		            else		                
 		                break
 		            fi
@@ -316,16 +307,16 @@ else
                 
                 if [ $HAYERROR -eq 0 ]; then
 		            # Procesado el archivo lo muevo a INFODIR
-		            `$PWD/Mover.sh "$ARCHIVO" "${ACEPDIR}/proc/" "$COMANDO"`
+		            `"$BINDIR/Mover.sh" "$ARCHIVO" "$ACEPDIR/proc/" "$COMANDO"`
 		        else
 		            `rm "$INFOTEMP"`
-		            `$PWD/Logging.sh "$COMANDO" "$MERRINV" "ERR"`
-                    `$PWD/Mover.sh "$ARCHIVO" "$RECHDIR/" "$COMANDO"` 	
+		            `"$BINDIR/Logging.sh" "$COMANDO" "$MERRGEN $ARCHIVO $MERRINV" "ERR"`
+                    `"$BINDIR/Mover.sh" "$ARCHIVO" "$RECHDIR/" "$COMANDO"` 	
 		        fi
             fi            
         fi
     done
 fi
 
-`$PWD/Logging.sh "$COMANDO" "$MLOGFIN" "INFO"`
+`"$BINDIR/Logging.sh" "$COMANDO" "$MLOGFIN" "INFO"`
 # Fin Rating
