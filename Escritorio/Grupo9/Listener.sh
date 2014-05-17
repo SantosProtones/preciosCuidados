@@ -79,7 +79,7 @@ else
 # 3.b Archivos de listas de precios
 
 # 3.b.a Validación del formato del registro			
-					es_lista_precios=`echo $novedad | grep -e "^[^-^ ]*-[0-9][0-9][0-9][0-9][0-1][0-9][0-3][0-9].*$" | wc -l`
+					es_lista_precios=`echo $novedad | grep -e "^[^-^ ]*-[0-9][0-9][0-9][0-9][0-1][0-9][0-3][0-9]\..*$" | wc -l`
 	
 					if [ $es_lista_precios -eq 1 ];then
 
@@ -142,7 +142,7 @@ else
 # 3.a Archivos de listas de compras			
 
 # 3.a.a Validación del formato del registro
-					es_lista_compras=`echo $novedad | grep -e "^[^.]*.[^-^ ]*$" | wc -l`
+					es_lista_compras=`echo $novedad | grep -e "^[^.]*\.[^-^ ]*$" | wc -l`
 			 					
 					if [ $es_lista_compras -eq 1 ];then
 
