@@ -376,37 +376,37 @@ function checkInstalledComponents() {
 			missingComponents=("${missingComponents[@]}" "$BINDIR")
 		else
 			installedComponents=("${installedComponents[@]}" "$BINDIR")
-			for script in "${requiredScripts[@]}"
-			do
-				if [ ! -f "$GRUPO/$BINDIR/$script" ]
-					then
-						missingComponents=("${missingComponents[@]}" "$script")
-				fi
-			done
 	fi
-	
+	for script in "${requiredScripts[@]}"
+	do
+		if [ ! -f "$GRUPO/$BINDIR/$script" ]
+			then
+				missingComponents=("${missingComponents[@]}" "$script")
+		fi
+	done
+
 	if [ ! -d "$GRUPO/$MAEDIR" ]
 		then
 			missingComponents=("${missingComponents[@]}" "$MAEDIR")
 		else
 			installedComponents=("${installedComponents[@]}" "$MAEDIR")
-			if [ ! -d "$GRUPO/$MAEDIR/precios" ]
-				then
-					missingComponents=("${missingComponents[@]}" "$MAEDIR/precios")
-			fi
-			if [ ! -d "$GRUPO/$MAEDIR/precios/proc" ]
-				then
-					missingComponents=("${missingComponents[@]}" "$MAEDIR/precios/proc")
-			fi
-			for dataFile in "${requiredDataFiles[@]}"
-			do
-				if [ ! -f "$GRUPO/$MAEDIR/$dataFile" ]
-					then
-						missingComponents=("${missingComponents[@]}" "$dataFile")
-				fi
-			done
 	fi
-	
+	if [ ! -d "$GRUPO/$MAEDIR/precios" ]
+		then
+			missingComponents=("${missingComponents[@]}" "$MAEDIR/precios")
+	fi
+	if [ ! -d "$GRUPO/$MAEDIR/precios/proc" ]
+		then
+			missingComponents=("${missingComponents[@]}" "$MAEDIR/precios/proc")
+	fi
+	for dataFile in "${requiredDataFiles[@]}"
+	do
+		if [ ! -f "$GRUPO/$MAEDIR/$dataFile" ]
+			then
+		missingComponents=("${missingComponents[@]}" "$dataFile")
+		fi
+	done
+
 	if [ ! -d "$GRUPO/$NOVEDIR" ]
 		then
 			missingComponents=("${missingComponents[@]}" "$NOVEDIR")
@@ -419,23 +419,23 @@ function checkInstalledComponents() {
 			missingComponents=("${missingComponents[@]}" "$ACEPDIR")
 		else
 			installedComponents=("${installedComponents[@]}" "$ACEPDIR")
-			if [ ! -d "$GRUPO/$ACEPDIR/proc" ]
-				then
-					missingComponents=("${missingComponents[@]}" "$ACEPDIR/proc")
-			fi
 	fi
-	
+	if [ ! -d "$GRUPO/$ACEPDIR/proc" ]
+		then
+			missingComponents=("${missingComponents[@]}" "$ACEPDIR/proc")
+	fi
+
 	if [ ! -d "$GRUPO/$INFODIR" ]
 		then
 			missingComponents=("${missingComponents[@]}" "$INFODIR")
 		else
 			installedComponents=("${installedComponents[@]}" "$INFODIR")
-			if [ ! -d "$GRUPO/$INFODIR/pres" ]
-				then
-					missingComponents=("${missingComponents[@]}" "$INFODIR/pres")
-			fi
 	fi
-	
+	if [ ! -d "$GRUPO/$INFODIR/pres" ]
+		then
+			missingComponents=("${missingComponents[@]}" "$INFODIR/pres")
+	fi
+
 	if [ ! -d "$GRUPO/$RECHDIR" ]
 		then
 			missingComponents=("${missingComponents[@]}" "$RECHDIR")
@@ -518,14 +518,6 @@ function printInstallationStatus() {
 					log "Direct Maestros y Tablas: ${boldRed}$GRUPO/$MAEDIR${default}" "INFO" doEcho
 			fi
 
-			for dataFile in "${requiredDataFiles[@]}"
-			do
-				if [ `isMissing "$dataFile"` == true ]
-				then
-					log "Archivo maestro o tabla: ${boldRed}$GRUPO/$MAEDIR/$dataFile${default}" "INFO" doEcho
-				fi
-			done
-
 			if [ `isMissing "$MAEDIR/precios"` == true ]
 				then
 					log "Subdirectorio del Direct Maestros y Tablas: ${boldRed}$GRUPO/$MAEDIR/precios${default}" "INFO" doEcho
@@ -535,6 +527,14 @@ function printInstallationStatus() {
 				then
 					log "Subdirectorio del Direct Maestros y Tablas: ${boldRed}$GRUPO/$MAEDIR/precios/proc${default}" "INFO" doEcho
 			fi
+
+			for dataFile in "${requiredDataFiles[@]}"
+			do
+				if [ `isMissing "$dataFile"` == true ]
+				then
+					log "Archivo maestro o tabla: ${boldRed}$GRUPO/$MAEDIR/$dataFile${default}" "INFO" doEcho
+				fi
+			done
 
 			if [ `isMissing "$NOVEDIR"` == true ]
 				then
@@ -649,6 +649,8 @@ function getDirectoryNames() {
 				userEnteredDirNames=true
 				askForDirectoryName "Defina directorio para maestros y tablas ($GRUPO/${boldBlue}$MAEDIR${default}): " "$MAEDIR"
 				replaceInMissing "$MAEDIR" "$dirName"
+				replaceInMissing "$MAEDIR/precios" "$dirName/precios"
+				replaceInMissing "$MAEDIR/precios/proc" "$dirName/precios/proc"
 				MAEDIR=$dirName
 				directoryNamesTaken=("${directoryNamesTaken[@]}" "$dirName")
 				log "Defina directorio para maestros y tablas ($GRUPO/${boldBlue}$MAEDIR${default}): ${bold}$MAEDIR${default}" "INFO"
@@ -691,6 +693,7 @@ function getDirectoryNames() {
 				userEnteredDirNames=true
 				askForDirectoryName "Defina el directorio de grabación de las Novedades aceptadas ($GRUPO/${boldBlue}$ACEPDIR${default}): " "$ACEPDIR"
 				replaceInMissing "$ACEPDIR" "$dirName"
+				replaceInMissing "$ACEPDIR/proc" "$dirName/proc"
 				ACEPDIR=$dirName
 				directoryNamesTaken=("${directoryNamesTaken[@]}" "$dirName")
 				log "Defina el directorio de grabación de las Novedades aceptadas ($GRUPO/${boldBlue}$ACEPDIR${default}): ${bold}$ACEPDIR${default}" "INFO"
@@ -701,6 +704,7 @@ function getDirectoryNames() {
 				userEnteredDirNames=true
 				askForDirectoryName "Defina el directorio de grabación de los informes de salida ($GRUPO/${boldBlue}$INFODIR${default}): " "$INFODIR"
 				replaceInMissing "$INFODIR" "$dirName"
+				replaceInMissing "$INFODIR/pres" "$dirName/pres"
 				INFODIR=$dirName
 				directoryNamesTaken=("${directoryNamesTaken[@]}" "$dirName")
 				log "Defina el directorio de grabación de los informes de salida ($GRUPO/${boldBlue}$INFODIR${default}): ${bold}$INFODIR${default}" "INFO"
@@ -763,37 +767,43 @@ function getDirectoryNames() {
 				log "Directorio Ejecutables: ${boldBlue}$GRUPO/$BINDIR${default}" "INFO" doEcho
 		fi
 
-		for script in "${requiredScripts[@]}"
-		do
-			if [ `isMissing "$script"` == true ]
-				then
-					log "Programa o función: ${boldBlue}$GRUPO/$BINDIR/$script${default}" "INFO" doEcho
-			fi
-		done
+		if [ "$prevInstallationExists" == true ]
+			then
+				for script in "${requiredScripts[@]}"
+				do
+					if [ `isMissing "$script"` == true ]
+						then
+							log "Programa o función: ${boldBlue}$GRUPO/$BINDIR/$script${default}" "INFO" doEcho
+					fi
+				done
+		fi
 	
 		if [ `isMissing "$MAEDIR"` == true ]
 			then
 				log "Direct Maestros y Tablas: ${boldBlue}$GRUPO/$MAEDIR${default}" "INFO" doEcho
 		fi
 
-		for dataFile in "${requiredDataFiles[@]}"
-		do
-			if [ `isMissing "$dataFile"` == true ]
-				then
-					log "Archivo maestro o tabla: ${boldBlue}$GRUPO/$MAEDIR/$dataFile${default}" "INFO" doEcho
-			fi
-		done
-
-		if [ `isMissing "$MAEDIR/precios"` == true ]
+		if [ "$prevInstallationExists" == true ]
 			then
-				log "Subdirectorio del Direct Maestros y Tablas: ${boldBlue}$GRUPO/$MAEDIR/precios${default}" "INFO" doEcho
+				if [ `isMissing "$MAEDIR/precios"` == true ]
+					then
+						log "Subdirectorio del Direct Maestros y Tablas: ${boldBlue}$GRUPO/$MAEDIR/precios${default}" "INFO" doEcho
+				fi
+		
+				if [ `isMissing "$MAEDIR/precios/proc"` == true ]
+					then
+						log "Subdirectorio del Direct Maestros y Tablas: ${boldBlue}$GRUPO/$MAEDIR/precios/proc${default}" "INFO" doEcho
+				fi
+		
+				for dataFile in "${requiredDataFiles[@]}"
+				do
+					if [ `isMissing "$dataFile"` == true ]
+						then
+							log "Archivo maestro o tabla: ${boldBlue}$GRUPO/$MAEDIR/$dataFile${default}" "INFO" doEcho
+					fi
+				done
 		fi
 
-		if [ `isMissing "$MAEDIR/precios/proc"` == true ]
-			then
-				log "Subdirectorio del Direct Maestros y Tablas: ${boldBlue}$GRUPO/$MAEDIR/precios/proc${default}" "INFO" doEcho
-		fi
-	
 		if [ `isMissing "$NOVEDIR"` == true ]
 			then
 				log "Directorio de Novedades: ${boldBlue}$GRUPO/$NOVEDIR${default}" "INFO" doEcho
@@ -804,10 +814,26 @@ function getDirectoryNames() {
 			then
 				log "Dir. Novedades Aceptadas: ${boldBlue}$GRUPO/$ACEPDIR${default}" "INFO" doEcho
 		fi
-	
+
+		if [ "$prevInstallationExists" == true ]
+			then
+				if [ `isMissing "$ACEPDIR/proc"` == true ]
+					then
+						log "Subdirectorio del Dir. Novedades Aceptadas: ${boldBlue}$GRUPO/$ACEPDIR/proc${default}" "INFO" doEcho
+				fi
+		fi
+
 		if [ `isMissing "$INFODIR"` == true ]
 			then
 				log "Dir. Informes de Salida: ${boldBlue}$GRUPO/$INFODIR${default}" "INFO" doEcho
+		fi
+
+		if [ "$prevInstallationExists" == true ]
+			then
+				if [ `isMissing "$INFODIR/pres"` == true ]
+					then
+						log "Subdirectorio del Dir. Informes de Salida: ${boldBlue}$GRUPO/$INFODIR/pres${default}" "INFO" doEcho
+				fi
 		fi
 	
 		if [ `isMissing "$RECHDIR"` == true ]
