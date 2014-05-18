@@ -3,10 +3,9 @@
 
 #
 actual=`pwd`
-export PATH=$PATH:$actual
+export PATH="$PATH":"$actual"
 grupo=${actual%/*}
 CONFDIR="$grupo/conf"
-
 #
 
 #INIT=0 
@@ -35,18 +34,19 @@ else
 	else
 	#Setear todas las variables que no hayan sido seteadas antes (una sola vez por cada sesion)
 
-		if [ -z $GRUPO ]
+		if [ -z "$GRUPO" ]
 		then
 			GRUPO=`cat "$CONFDIR/Installer.conf" | grep '^GRUPO=' | cut -f2 -d'='`
 			
-			if [ "$GRUPO" == "$grupo" ]
+			if [ "$GRUPO" != "$grupo" ]
 			then
-				export GRUPO
-			else
+
 				echo "La variable GRUPO no coincide con el directorio de la instalacion"
-				echo "Ajuste el valor de GRUPO o el directorio de la instalacion para continuar"
-				exit 1
-			fi
+				echo "Ajuste el valor de GRUPO o el directorio de la instalacion para continuar"			
+				#exit 1
+				return
+
+				fi
 		fi	
 
 		#CONFDIR=`cat "$CONFDIR/installer.conf" | grep '^CONFDIR=' | cut -f2 -d'='`
@@ -165,35 +165,35 @@ else
 				if [ ! -f  "$BINDIR/Listener.sh" ]
 				then
 					ERRINST=1
-					. ./Logging.sh Initializer "No se encuentra script Listener" ERR
+					./Logging.sh Initializer "No se encuentra script Listener" ERR
 				elif [ ! -x "$BINDIR/Listener.sh" ]
 				then 
 					chmod +x "$BINDIR/Listener.sh"
-					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Listener.sh" INFO
+					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Listener.sh" INFO
 				 fi
 
 				#------------
 				if [ ! -f  "$BINDIR/Masterlist.sh" ]
 				then
 					ERRINST=1
-					. ./Logging.sh Initializer "No se encuentra script Masterlist" ERR
+					./Logging.sh Initializer "No se encuentra script Masterlist" ERR
 
 				elif [ ! -x "$BINDIR/Masterlist.sh" ]
 				then
 					chmod +x "$BINDIR/Masterlist.sh"
-					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Masterlist.sh" INFO
+					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Masterlist.sh" INFO
 
 				fi
 				#------------
 				if [ ! -f "$BINDIR/Rating.sh" ]
 				then
 					ERRINST=1
-					. ./Logging.sh Initializer "No se encuentra script Rating" ERR
+					./Logging.sh Initializer "No se encuentra script Rating" ERR
 
 				elif [ ! -x "$BINDIR/Rating.sh" ]
 				then
 					chmod +x "$BINDIR/Rating.sh"
-					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Rating.sh" INFO
+					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Rating.sh" INFO
 
 				fi
 				#--------------
@@ -201,23 +201,23 @@ else
 				if [ ! -f  "$BINDIR/Reporting.pl" ]
 				then
 					ERRINST=1
-					. ./Logging.sh Initializer "No se encuentra Reporting" ERR
+					./Logging.sh Initializer "No se encuentra Reporting" ERR
 
 				elif [  ! -x  "$BINDIR/Reporting.pl"  ]
 				then
 					chmod +x "$BINDIR/Reporting.pl"
-					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Reporting.pl" INFO
+					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Reporting.pl" INFO
 
 				fi
 				#---------------
 				if [ ! -f  "$BINDIR/Mover.sh" ]
 				then
 					ERRINST=1
-					. ./Logging.sh Initializer "No se encuentra Mover" ERR
+					./Logging.sh Initializer "No se encuentra Mover" ERR
 				elif [ ! -x  "$BINDIR/Mover.sh" ]
 				then
 					chmod +x "$BINDIR/Mover.sh"
-					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Mover.sh" INFO
+					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Mover.sh" INFO
 	
 				fi
 				#----------------
@@ -225,22 +225,22 @@ else
 				if [ ! -f  "$BINDIR/Start.sh" ]
 				then
 					ERRINST=1
-					. ./Logging.sh Initializer "No se encuentra Start" ERR
+					./Logging.sh Initializer "No se encuentra Start" ERR
 				elif [ ! -x  "$BINDIR/Start.sh" ]
 				then
 					chmod +x "$BINDIR/Start.sh"
-					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Start.sh" INFO
+					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Start.sh" INFO
 				fi
 				#----------------
 
 				if [ ! -f  "$BINDIR/Stop.sh" ]
 				then
 					ERRINST=1
-					. ./Logging.sh Initializer "No se encuentra Stop" ERR
+					./Logging.sh Initializer "No se encuentra Stop" ERR
 				elif [ ! -x  "$BINDIR/Stop.sh" ]
 				then
 					chmod +x "$BINDIR/Stop.sh"
-					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Stop.sh" INFO
+					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Stop.sh" INFO
 				fi
 				#----------------
 				
@@ -264,7 +264,7 @@ else
 		if [ ! -d "$MAEDIR" ]
 		then 
 			ERRINST=1
-			./Logging.sh Initializer "No existe el directorio $MAEDIR" ERR
+			. ./Logging.sh Initializer "No existe el directorio $MAEDIR" ERR
 
 		else
 				# Verifico la existencia de los archivos maestros y tablas con permisos adecuados
@@ -377,13 +377,15 @@ else
 			export LOGSIZE
 			export CONFDIR
 
+
+export GRUPO
 			INIT=1
 			export INIT
 
 		else
 			MsgYaInit="Ambiente ya inicializado. Si quiere reiniciar termine su sesión e inicie nuevamente"
 			echo "$MsgYaInit"
-			. ./Logging.sh Initializer "$MsgYaInit" INFO
+			./Logging.sh Initializer "$MsgYaInit" INFO
 		fi
 		#fin exportacion
 		#Inicio del demonio Listener y muestra el resumen
@@ -408,7 +410,7 @@ else
 				else 
 					yaEstaba="Listener ya estaba iniciado. PID: $PID"
 					echo $yaEstaba
-					. ./Logging.sh Initializer $yaEstaba INFO
+					./Logging.sh Initializer "$yaEstaba" INFO
 
 				fi
 	
@@ -455,11 +457,11 @@ else
 		then 
 			echo "Demonio corriendo bajo el PID: $PID"
 		fi
-
+		. ./Logging.sh Initializer "Comando Initializer - Fin de ejecucion - Inicializacion correcta" INFO
 	elif [ $ERRINST -eq 1 ] 
 	then
 		echo "Se han encontrado errores en la instalacion. Verifique el log Initializer.$LOGEXT para mas información"
-
+		. ./Logging.sh Initializer "Comando Initializer - Fin de ejecucion - Inicializacion incorrecta" INFO
 	elif  [ $ERRINST -eq 2 ]
 	then
 		echo "Se encontraron errores en la instalacion. Los mismos no serán logueados"
@@ -468,6 +470,7 @@ else
 		echo "	2) Directorio de herramientas de RETAILC"
 		echo "	3) Herramienta de loggin de RETAILC"
 		echo "	4) Archivo de configuracion de la instalacion de RETAILC"	
+
 	
 	fi
 
@@ -475,7 +478,5 @@ else
 
 
 
-
 fi # fin del if [ -d $CONFDIR ]
-
 
