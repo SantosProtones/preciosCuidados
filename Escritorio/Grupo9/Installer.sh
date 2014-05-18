@@ -217,17 +217,22 @@ function askForDirectoryName() {
 		case $dirName in
 			"$CONFDIR" | "$DATADIR" )
 				echo -e "${boldBlue}$dirName${default} es un nombre de directorio reservado. Por favor elija otro nombre";;
-			* )
-				if [ "$dirName" == "" ]
-					then
-						dirName="$defaultDirName"
-				fi
+			"" )
+				dirName="$defaultDirName"
+				break;;
+			[[:word:][:punct:]]* )
+				#if [ "$dirName" == "" ]
+				#	then
+				#		dirName="$defaultDirName"
+				#fi
 				if [ `isDirectoryNameTaken "$dirName"` == true ]
 					then
-						echo -e "El nombre ${boldBlue}$dirName${default} ya fue seleccionado para otro directorio. Por favor elija otro nombre";
+						echo -e "El nombre ${boldBlue}$dirName${default} ya existe o fue seleccionado para otro directorio. Por favor elija otro nombre";
 					else
 						break
 				fi;;
+			* )
+				echo -e "${boldRed}Datos ingresados invalidos, por favor intente de nuevo.${default}";;
 		esac
 	done
 }
@@ -300,8 +305,6 @@ function readConf() {
 				LOGSIZE="$propertyValue";;
 		esac
 	done <&3
-
-#	echo `cat "$installerConfigFile" | fgrep "$propertyName" | cut -f2 -d"="`
 
 	exec 3<&-
 }
@@ -626,11 +629,14 @@ function checkPerlVersion() {
 }
 
 function getDirectoryNames() {
-	while [ "$confirmInstall" == false ];
+	local userEnteredDirNames=false
+
+	while [ "$confirmInstall" == false ]
 	do
 		unset directoryNamesTaken
 		if [ `isMissing "$BINDIR"` == true ]
 			then
+				userEnteredDirNames=true
 				askForDirectoryName "Defina el directorio de instalación de los ejecutables ($GRUPO/${boldBlue}$BINDIR${default}): " "$BINDIR"
 				replaceInMissing "$BINDIR" "$dirName"
 				BINDIR=$dirName
@@ -640,6 +646,7 @@ function getDirectoryNames() {
 		
 		if [ `isMissing "$MAEDIR"` == true ]
 			then
+				userEnteredDirNames=true
 				askForDirectoryName "Defina directorio para maestros y tablas ($GRUPO/${boldBlue}$MAEDIR${default}): " "$MAEDIR"
 				replaceInMissing "$MAEDIR" "$dirName"
 				MAEDIR=$dirName
@@ -649,6 +656,7 @@ function getDirectoryNames() {
 		
 		if [ `isMissing "$NOVEDIR"` == true ]
 			then
+				userEnteredDirNames=true
 				askForDirectoryName "Defina el Directorio de arribo de novedades ($GRUPO/${boldBlue}$NOVEDIR${default}): " "$NOVEDIR"
 				replaceInMissing "$NOVEDIR" "$dirName"
 				NOVEDIR=$dirName
@@ -680,6 +688,7 @@ function getDirectoryNames() {
 		
 		if [ `isMissing "$ACEPDIR"` == true ]
 			then
+				userEnteredDirNames=true
 				askForDirectoryName "Defina el directorio de grabación de las Novedades aceptadas ($GRUPO/${boldBlue}$ACEPDIR${default}): " "$ACEPDIR"
 				replaceInMissing "$ACEPDIR" "$dirName"
 				ACEPDIR=$dirName
@@ -689,6 +698,7 @@ function getDirectoryNames() {
 		
 		if [ `isMissing "$INFODIR"` == true ]
 			then
+				userEnteredDirNames=true
 				askForDirectoryName "Defina el directorio de grabación de los informes de salida ($GRUPO/${boldBlue}$INFODIR${default}): " "$INFODIR"
 				replaceInMissing "$INFODIR" "$dirName"
 				INFODIR=$dirName
@@ -698,6 +708,7 @@ function getDirectoryNames() {
 		
 		if [ `isMissing "$RECHDIR"` == true ]
 			then
+				userEnteredDirNames=true
 				askForDirectoryName "Defina el directorio de grabación de Archivos rechazados ($GRUPO/${boldBlue}$RECHDIR${default}): " "$RECHDIR"
 				replaceInMissing "$RECHDIR" "$dirName"
 				RECHDIR=$dirName
@@ -707,6 +718,7 @@ function getDirectoryNames() {
 		
 		if [ `isMissing "$LOGDIR"` == true ]
 			then
+				userEnteredDirNames=true
 				askForDirectoryName "Defina el directorio de logs ($GRUPO/${boldBlue}$LOGDIR${default}): " "$LOGDIR"
 				replaceInMissing "$LOGDIR" "$dirName"
 				LOGDIR=$dirName
@@ -771,6 +783,16 @@ function getDirectoryNames() {
 					log "Archivo maestro o tabla: ${boldBlue}$GRUPO/$MAEDIR/$dataFile${default}" "INFO" doEcho
 			fi
 		done
+
+		if [ `isMissing "$MAEDIR/precios"` == true ]
+			then
+				log "Subdirectorio del Direct Maestros y Tablas: ${boldBlue}$GRUPO/$MAEDIR/precios${default}" "INFO" doEcho
+		fi
+
+		if [ `isMissing "$MAEDIR/precios/proc"` == true ]
+			then
+				log "Subdirectorio del Direct Maestros y Tablas: ${boldBlue}$GRUPO/$MAEDIR/precios/proc${default}" "INFO" doEcho
+		fi
 	
 		if [ `isMissing "$NOVEDIR"` == true ]
 			then
@@ -809,6 +831,11 @@ function getDirectoryNames() {
 					confirmInstall=true
 					break;;
 				"No" )
+					if [ "$userEnteredDirNames" == false ]
+						then
+							log "$INFO_INSTALLATION_CANCELED_BY_USER" "INFO"
+							exit $INFO_CODE_INSTALLATION_CANCELED_BY_USER
+					fi
 					log "El usuario decidió reingresar los nombres de directorios" "INFO"
 					clear
 					break;;
@@ -827,7 +854,7 @@ function confirmInstallation() {
 			"Si" )
 				break;;
 			"No" )
-				log "$INFO_INSTALLATION_CANCELED_BY_USER" "INFO";
+				log "$INFO_INSTALLATION_CANCELED_BY_USER" "INFO"
 				exit $INFO_CODE_INSTALLATION_CANCELED_BY_USER;;
 			* )
 				echo -e "$INFO_ANSWER_MUST_BE_YES_OR_NO";;
