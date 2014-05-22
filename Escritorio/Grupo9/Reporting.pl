@@ -428,9 +428,11 @@ sub printFullReport{
 	printWithRefLegend();
 	opendir(PRESDIR,"$PRESDIR") || die "No pudo abrirse: $!";
 	my @files=readdir(PRESDIR);
-	my $cantFilter=@filtroUsuarios; 
+	my $cantFilter=@filtroUsuarios;
+	my $hayPres=0;
 	foreach $fileName(@files){
 		if($fileName=~m/(..*)\.[^~.][^~.]*$/){
+			$hayPres=1;
 			if($cantFilter==0){
 				printPresReport($fileName);
 			}else{
@@ -440,7 +442,14 @@ sub printFullReport{
 			}
 		}
 	}
+	if(!$hayPres){
+	  printReport("\nNo se encontraron presupuestos en la carpeta $INFODIR/pres al realizar el informe\n\n");
+	}
 	cerrarInforme();
+	if($opciones{"w"}){
+	  my $numInfo=getNumInfo()-1;
+	  print "Se genero el informe: $INFODIR/info_$numInfo\n\n";
+	}
 	return;
 }
 
@@ -460,7 +469,7 @@ sub printHeaderReport{
 		printReport("Todos ");
 	}else{
 		foreach $key(keys %filtroSupers){
-			printReport($filtroSupers{$key} . " ");
+			printReport($filtroSupers{$key} . " | ");
 		}
 	}
 	#printReport("\n");
