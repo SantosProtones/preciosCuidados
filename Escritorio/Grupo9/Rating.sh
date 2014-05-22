@@ -283,7 +283,7 @@ else
 		        do
 		            IFS=$SAVEIFS
 		            # Verifica la validez del registro
-		            NUMTAGP=`echo "$REGPROD" | grep -c ";"`
+		            NUMTAGP=`echo "$REGPROD" | grep -e "^[0-9][0-9]*;[^;]*$" -c`
                     # Valida numero de delimitadores
                     if [ $NUMTAGP -ne 1 ]; then 
                         HAYERROR=1	
