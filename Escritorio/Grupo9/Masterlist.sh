@@ -157,7 +157,7 @@ do
                 Precio=`echo $Reg_Precio | cut -f$Ubic_Precio -d';'`
 
                 Producto_vacio=`echo $Producto | sed "s-^ *--"`
-                Precio_vacio=`echo $Precio | sed "s-^ *--"`
+                Precio_vacio=`echo $Precio | sed "s-^ *--"`               
 
                 if [ -z $Producto ]
                 then
@@ -171,13 +171,13 @@ do
                     Reg_nok=`expr $Reg_nok + 1`
                     continue
         
-                elif [ -z $Precio ]
+                elif [ -z $Precio ] || ( ! [[ $Precio =~ ^[0-9]+(\.[0-9]+)?$ ]])
                 then
                     #Incremento la cantidad de registros nok
                     Reg_nok=`expr $Reg_nok + 1`
                     continue
 
-                elif [ -z $Precio_vacio ]
+		elif [ -z $Precio_vacio ]
                 then
                     #Incremento la cantidad de registros nok
                     Reg_nok=`expr $Reg_nok + 1`
