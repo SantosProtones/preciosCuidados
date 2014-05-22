@@ -165,35 +165,35 @@ else
 				if [ ! -f  "$BINDIR/Listener.sh" ]
 				then
 					ERRINST=1
-					./Logging.sh Initializer "No se encuentra script Listener" ERR
+					. ./Logging.sh Initializer "No se encuentra script Listener" ERR
 				elif [ ! -x "$BINDIR/Listener.sh" ]
 				then 
 					chmod +x "$BINDIR/Listener.sh"
-					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Listener.sh" INFO
+					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Listener.sh" INFO
 				 fi
 
 				#------------
 				if [ ! -f  "$BINDIR/Masterlist.sh" ]
 				then
 					ERRINST=1
-					./Logging.sh Initializer "No se encuentra script Masterlist" ERR
+					. ./Logging.sh Initializer "No se encuentra script Masterlist" ERR
 
 				elif [ ! -x "$BINDIR/Masterlist.sh" ]
 				then
 					chmod +x "$BINDIR/Masterlist.sh"
-					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Masterlist.sh" INFO
+					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Masterlist.sh" INFO
 
 				fi
 				#------------
 				if [ ! -f "$BINDIR/Rating.sh" ]
 				then
 					ERRINST=1
-					./Logging.sh Initializer "No se encuentra script Rating" ERR
+					. ./Logging.sh Initializer "No se encuentra script Rating" ERR
 
 				elif [ ! -x "$BINDIR/Rating.sh" ]
 				then
 					chmod +x "$BINDIR/Rating.sh"
-					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Rating.sh" INFO
+					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Rating.sh" INFO
 
 				fi
 				#--------------
@@ -201,23 +201,23 @@ else
 				if [ ! -f  "$BINDIR/Reporting.pl" ]
 				then
 					ERRINST=1
-					./Logging.sh Initializer "No se encuentra Reporting" ERR
+					. ./Logging.sh Initializer "No se encuentra Reporting" ERR
 
 				elif [  ! -x  "$BINDIR/Reporting.pl"  ]
 				then
 					chmod +x "$BINDIR/Reporting.pl"
-					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Reporting.pl" INFO
+					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Reporting.pl" INFO
 
 				fi
 				#---------------
 				if [ ! -f  "$BINDIR/Mover.sh" ]
 				then
 					ERRINST=1
-					./Logging.sh Initializer "No se encuentra Mover" ERR
+					. ./Logging.sh Initializer "No se encuentra Mover" ERR
 				elif [ ! -x  "$BINDIR/Mover.sh" ]
 				then
 					chmod +x "$BINDIR/Mover.sh"
-					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Mover.sh" INFO
+					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Mover.sh" INFO
 	
 				fi
 				#----------------
@@ -225,22 +225,22 @@ else
 				if [ ! -f  "$BINDIR/Start.sh" ]
 				then
 					ERRINST=1
-					./Logging.sh Initializer "No se encuentra Start" ERR
+					. ./Logging.sh Initializer "No se encuentra Start" ERR
 				elif [ ! -x  "$BINDIR/Start.sh" ]
 				then
 					chmod +x "$BINDIR/Start.sh"
-					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Start.sh" INFO
+					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Start.sh" INFO
 				fi
 				#----------------
 
 				if [ ! -f  "$BINDIR/Stop.sh" ]
 				then
 					ERRINST=1
-					./Logging.sh Initializer "No se encuentra Stop" ERR
+					. ./Logging.sh Initializer "No se encuentra Stop" ERR
 				elif [ ! -x  "$BINDIR/Stop.sh" ]
 				then
 					chmod +x "$BINDIR/Stop.sh"
-					./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Stop.sh" INFO
+					. ./Logging.sh Initializer "Se han otorgado permisos de ejecución sobre Stop.sh" INFO
 				fi
 				#----------------
 				
@@ -385,7 +385,7 @@ export GRUPO
 		else
 			MsgYaInit="Ambiente ya inicializado. Si quiere reiniciar termine su sesión e inicie nuevamente"
 			echo "$MsgYaInit"
-			./Logging.sh Initializer "$MsgYaInit" INFO
+			. ./Logging.sh Initializer "$MsgYaInit" INFO
 		fi
 		#fin exportacion
 		#Inicio del demonio Listener y muestra el resumen
@@ -410,7 +410,7 @@ export GRUPO
 				else 
 					yaEstaba="Listener ya estaba iniciado. PID: $PID"
 					echo $yaEstaba
-					./Logging.sh Initializer "$yaEstaba" INFO
+					. ./Logging.sh Initializer "$yaEstaba" INFO
 
 				fi
 	
